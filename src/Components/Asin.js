@@ -269,7 +269,7 @@ const CombinedComponent = () => {
           </div>
         </div>
       </div>
-      <div className="row mt-5">
+      {/* <div className="row mt-5">
         <div className="col-md-12">
           <img
             src="/images/chart.png"
@@ -277,7 +277,7 @@ const CombinedComponent = () => {
             style={{ width: "100%", height: "100%" }}
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
