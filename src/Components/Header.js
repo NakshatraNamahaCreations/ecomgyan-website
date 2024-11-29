@@ -84,8 +84,9 @@ function Header() {
               <ul className="dropdown-menu" aria-labelledby="toolsDropdown">
                 <li>
                   <Link
+                    onClick={handleremove}
                     className="dropdown-item poppins-regular"
-                    to="/asin-code"
+                    // to="/asin-code"
                   >
                     Logout
                   </Link>

@@ -42,7 +42,7 @@ const Asin = () => {
     }
   }, []);
 
-  console.log("userData===suman", userData);
+  console.log("userData===suman", userData?._id);
 
   const loadScript = (src) => {
     return new Promise((resolve) => {
@@ -216,7 +216,7 @@ const Asin = () => {
   //           const verifyResponse = await axios.get(
   //             `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
   //             {
-  //               params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId as query parameter
+  //               params: { userId: "674989f5dfc8aeedb0bebbff" }, // Pass userId as query parameter
   //             }
   //           );
   //           if (verifyResponse.data.paymentStatus) {
@@ -315,15 +315,13 @@ const Asin = () => {
     }
   };
 
-  // 672f4cab5ec0d6f27393a10e
-
   // // Verify payment and update user search limit
   // const verifyPayment = async (paymentId) => {
   //   try {
   //     await axios.get(
   //       `https://api.proleverageadmin.in/api/payment/payment/${paymentId}`,
   //       {
-  //         params: { userId: "672f4cab5ec0d6f27393a10e" },
+  //         params: { userId: "674989f5dfc8aeedb0bebbff" },
   //       }
   //     );
   //   } catch (error) {
