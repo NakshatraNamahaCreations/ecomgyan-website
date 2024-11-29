@@ -5,11 +5,9 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
-import Header1 from "./Header1";
 
-const Asin = () => {
-  const [asin, setAsin] = useState("");
-  const [country, setCountry] = useState("IN");
+const CombinedComponent = () => {
+  const [asinNo, setAsinNo] = useState("");
   const [data, setData] = useState([]);
   const [error, setError] = useState("");
   const [price, setPrice] = useState(100);
@@ -60,6 +58,198 @@ const Asin = () => {
       document.body.appendChild(script);
     });
   };
+
+  const createRazorpayOrder = (amount) => {
+    let data = JSON.stringify({
+      amount: amount * 1,
+      currency: "INR",
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "https://api.proleverageadmin.in/orders",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        handleRazorpayScreen(response.data.amount);
+      })
+      .catch((error) => {
+        console.log("error at", error);
+      });
+  };
+
+  const handleRazorpayScreen = async (amount) => {
+    const res = await loadScript("https:/checkout.razorpay.com/v1/checkout.js");
+
+    if (!res) {
+      alert("Some error at razorpay screen loading");
+      return;
+    }
+
+    const options = {
+      key: "rzp_live_yzuuxyiOlu7Oyj",
+      amount: amount,
+      currency: "INR",
+      name: "Proleverage coders",
+      description: "payment to Proleverage coders",
+      image: "https://papayacoders.com/demo.png",
+      handler: function (response) {
+        setResponseId(response.razorpay_payment_id);
+      },
+      prefill: {
+        name: "papaya coders",
+        email: "papayacoders@gmail.com",
+      },
+      theme: {
+        color: "#F4C430",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+  };
+
+  const paymentFetch = (e) => {
+    e.preventDefault();
+
+    const paymentId = e.target.paymentId.value;
+
+    axios
+      .get(`https://api.proleverageadmin.in/payment/${paymentId}`)
+      .then((response) => {
+        console.log(response.data);
+        setResponseState(response.data);
+      })
+      .catch((error) => {
+        console.log("error occures", error);
+      });
+  };
+
+  // const search = async () => {
+  //   if (!asinNo) {
+  //     setError("Please enter ASIN");
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await axios.get(`https://api.proleverageadmin.in/api/amazon/getitems`, {
+  //       params: { asinNo },
+  //     });
+
+  //     if (res.status === 200) {
+  //       setData(res.data.ItemsResult.Items);
+  //       console.log("res.data.ItemsResult.Items", res.data.ItemsResult.Items);
+  //       setError("");
+  //       if (res.data.ItemsResult.Items.length > 0) {
+  //         const itemPrice =
+  //           res.data.ItemsResult.Items[0]?.Offers?.Listings[0]?.Price?.Amount ||
+  //           0;
+  //         calculateDailySales(itemPrice);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setError("Error fetching data. Please try again.");
+  //   }
+  // };
+
+  // const search = async () => {
+  //   if (!asinNo) {
+  //     setError("Please enter ASIN");
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await axios.get(`https://api.proleverageadmin.in/api/amazon/getitems`, {
+  //       params: {
+  //         asinNo,
+  //         userId: "672f4cab5ec0d6f27393a10e",
+  //       },
+  //     });
+
+  //     if (res.data.showPaymentModal) {
+  //       setShowPaymentModal(true);
+  //     } else {
+  //       setData(res.data.data.ItemsResult.Items || []);
+  //       setError("");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setError("Error fetching data. Please try again.");
+  //   }
+  // };
+
+  // const search = async () => {
+  //   if (!asinNo) {
+  //     setError("Please enter ASIN");
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await axios.get(`https://api.proleverageadmin.in/api/amazon/getitems`, {
+  //       params: { asinNo, userId: "672f4cab5ec0d6f27393a10e" },
+  //     });
+
+  //     if (res.data.showPaymentModal) {
+  //       // setShowPaymentModal(true);
+  //       alert("Free search limit reached. Please make a payment.");
+  //     } else {
+  //       setData(res.data.data.ItemsResult.Items || []);
+  //       setError("");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setError("Error fetching data. Please try again.");
+  //   }
+  // };
+  // Working Condition
+  const search = async () => {
+    if (!asinNo) {
+      setError("Please enter ASIN");
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const res = await axios.get(
+        `https://api.proleverageadmin.in/api/amazon/getitems`,
+        {
+          params: {
+            asinNo,
+            // userId: userData?._id,
+            userId: "672f4cab5ec0d6f27393a10e",
+          },
+        }
+      );
+
+      if (res.data.showPaymentModal) {
+        alert("Free search limit reached. Please make a payment.");
+      } else {
+        setData(res.data.data.ItemsResult.Items || []);
+        setError("");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 403) {
+        setError(error.response.data.message);
+        // window.location.assign("/payment");
+        handlePayment1();
+      } else {
+        console.error("Error fetching data:", error);
+        setError("Error fetching data. Please try again.");
+      }
+    }
+    setLoading(false);
+  };
+
+  console.log("data", data);
 
   const calculateFees = () => {
     let referralFee;
@@ -146,106 +336,6 @@ const Asin = () => {
   };
 
   // Handle the Razorpay payment screen
-  // const handlePayment1 = async () => {
-  //   const isRazorpayLoaded = await loadRazorpayScript();
-  //   if (!isRazorpayLoaded) {
-  //     alert("Failed to load Razorpay. Please try again.");
-  //     return;
-  //   }
-
-  //   const orderId = await createOrder();
-  //   if (!orderId) return;
-
-  //   const options = {
-  //     key: "rzp_live_yzuuxyiOlu7Oyj", // Replace with your Razorpay key
-  //     amount: 100, // Amount in paise
-  //     currency: "INR",
-  //     name: "Your Company Name",
-  //     description: "Payment for additional search count",
-  //     order_id: orderId,
-  //     handler: async function (response) {
-  //       try {
-  //         await verifyPayment(response.razorpay_payment_id);
-  //         alert("Payment successful! 500 searches added to your account.");
-  //       } catch (error) {
-  //         console.error("Payment verification failed:", error);
-  //         alert("Payment verification failed. Please contact support.");
-  //       }
-  //     },
-  //     prefill: {
-  //       name: "Customer Name",
-  //       email: "customer@example.com",
-  //     },
-  //     theme: {
-  //       color: "#3399cc",
-  //     },
-  //   };
-
-  //   const rzp1 = new window.Razorpay(options);
-  //   rzp1.open();
-  // };
-
-  // const handlePayment1 = async () => {
-  //   // if (!userData) {
-  //   //   alert("User not logged in. Please log in and try again.");
-  //   //   return;
-  //   // }
-
-  //   const isRazorpayLoaded = await loadRazorpayScript();
-  //   if (!isRazorpayLoaded) {
-  //     alert("Failed to load Razorpay. Please try again.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const orderId = await createOrder(); // Create Razorpay order
-  //     if (!orderId) {
-  //       throw new Error("Order ID not generated");
-  //     }
-
-  //     const options = {
-  //       key: "rzp_live_yzuuxyiOlu7Oyj", // Replace with your Razorpay key
-  //       amount: 100, // Amount in paise
-  //       currency: "INR",
-  //       name: "Your Company Name",
-  //       description: "Payment for additional search count",
-  //       order_id: orderId,
-  //       handler: async function (response) {
-  //         try {
-  //           // Call backend to verify the payment
-  //           const verifyResponse = await axios.get(
-  //             `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
-  //             {
-  //               params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId as query parameter
-  //             }
-  //           );
-  //           if (verifyResponse.data.paymentStatus) {
-  //             alert("Payment successful! Search count updated.");
-  //           } else {
-  //             alert("Payment verification failed. Please contact support.");
-  //           }
-  //         } catch (error) {
-  //           console.error("Error verifying payment:", error);
-  //           alert("Payment verification failed. Please contact support.");
-  //         }
-  //       },
-  //       prefill: {
-  //         name: userData?.name || "Customer Name",
-  //         email: userData?.email || "customer@example.com",
-  //       },
-  //       theme: {
-  //         color: "#3399cc",
-  //       },
-  //     };
-
-  //     const rzp1 = new window.Razorpay(options);
-  //     rzp1.open();
-  //   } catch (error) {
-  //     console.error("Error handling payment:", error);
-  //     alert("Failed to process payment. Please try again.");
-  //   }
-  // };
-
   const handlePayment1 = async () => {
     const isRazorpayLoaded = await loadRazorpayScript();
     if (!isRazorpayLoaded) {
@@ -253,123 +343,53 @@ const Asin = () => {
       return;
     }
 
-    try {
-      const orderId = await createOrder(); // Create Razorpay order
-      if (!orderId) {
-        throw new Error("Order ID not generated");
-      }
+    const orderId = await createOrder();
+    if (!orderId) return;
 
-      const options = {
-        key: "rzp_live_yzuuxyiOlu7Oyj", // Replace with your Razorpay key
-        amount: 100, // Amount in paise
-        currency: "INR",
-        name: "Your Company Name",
-        description: "Payment for additional search count",
-        order_id: orderId,
-        handler: async function (response) {
-          try {
-            // Verify payment on the backend
-            const verifyResponse = await axios.get(
-              `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
-              {
-                params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId dynamically
-              }
-            );
-
-            if (verifyResponse.data.paymentStatus) {
-              // Redirect to success page
-              setShowPaymentModal(false);
-              window.location.href = "/asin-code";
-            } else {
-              // Redirect to failure page if payment status is false
-              window.location.href = "/payment-failure";
-            }
-          } catch (error) {
-            console.error("Error verifying payment:", error);
-            // Redirect to failure page on error
-            window.location.href = "/payment-failure";
-          }
-        },
-        prefill: {
-          name: userData?.name || "Customer Name",
-          email: userData?.email || "customer@example.com",
-        },
-        theme: {
-          color: "#3399cc",
-        },
-      };
-
-      const rzp1 = new window.Razorpay(options);
-
-      // Handle payment closure by the user
-      rzp1.on("payment.failed", function (response) {
-        console.error("Payment failed:", response.error);
-        // Redirect to failure page on user closure
-        window.location.href = "/payment-failure";
-      });
-
-      rzp1.open();
-    } catch (error) {
-      console.error("Error handling payment:", error);
-      alert("Failed to process payment. Please try again.");
-    }
-  };
-
-  // // Verify payment and update user search limit
-  // const verifyPayment = async (paymentId) => {
-  //   try {
-  //     await axios.get(
-  //       `https://api.proleverageadmin.in/api/payment/payment/${paymentId}`,
-  //       {
-  //         params: { userId: "672f4cab5ec0d6f27393a10e" },
-  //       }
-  //     );
-  //   } catch (error) {
-  //     console.error("Error verifying payment:", error);
-  //   }
-  // };
-
-  const handleSearch = async () => {
-    if (!asin) {
-      setError("Please enter a valid ASIN.");
-      return;
-    }
-
-    setLoading(true);
-    setError(""); // Clear any previous errors
-
-    try {
-      const response = await axios.get(
-        "https://api.proleverageadmin.in/api/amazon/affiliatekeyword1",
-        {
-          params: { asin, country, userId: "672f4cab5ec0d6f27393a10e" },
+    const options = {
+      key: "rzp_live_yzuuxyiOlu7Oyj", // Replace with your Razorpay key
+      amount: 100, // Amount in paise
+      currency: "INR",
+      name: "Your Company Name",
+      description: "Payment for additional search count",
+      order_id: orderId,
+      handler: async function (response) {
+        try {
+          await verifyPayment(response.razorpay_payment_id);
+          alert("Payment successful! 500 searches added to your account.");
+          setShowPaymentModal(false);
+        } catch (error) {
+          console.error("Payment verification failed:", error);
+          alert("Payment verification failed. Please contact support.");
         }
-      );
+      },
+      prefill: {
+        name: "Customer Name",
+        email: "customer@example.com",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
 
-      if (response.data.data && Object.keys(response.data.data).length > 0) {
-        setData(response.data.data); // Set data if valid
-      } else {
-        setData([]); // Clear data if response is empty
-        setError("ASIN code is incorrect or no data available.");
-      }
-    } catch (err) {
-      // setError(
-      //   "Failed to fetch data. Please check the ASIN code and try again."
-      // );
-      const backendError =
-        err.response?.data?.error || "An unexpected error occurred.";
-      setShowPaymentModal(true);
-      setError(backendError);
-      console.error("Error fetching data:", err.message);
-    }
-
-    setLoading(false);
+    const rzp1 = new window.Razorpay(options);
+    rzp1.open();
   };
 
-  console.log("data", data);
+  // Verify payment and update user search limit
+  const verifyPayment = async (paymentId) => {
+    try {
+      await axios.get(`https://api.proleverageadmin.in/payment/${paymentId}`, {
+        params: { userId: userData?._id },
+      });
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      throw new Error("Payment verification failed.");
+    }
+  };
 
   return (
-    <div className="container">
+    <div className="container mt-3 mb-3">
       <div className="row justify-content-center web-tools">
         <div className="col-md-12">
           <div className="row">
@@ -409,7 +429,7 @@ const Asin = () => {
                 </Link>
               </div>
 
-              {/* <div className="col-md-2">
+              <div className="col-md-2">
                 <div
                   // onClick={() => createRazorpayOrder(100)}
                   onClick={handlePayment1}
@@ -431,7 +451,7 @@ const Asin = () => {
                     Pay Now
                   </div>
                 </div>
-              </div> */}
+              </div>
             </div>
             {/* <div
               className="mb-4"
@@ -452,63 +472,20 @@ const Asin = () => {
                 Search by ASIN
               </h5>
               <div className="row mt-3 mb-3">
-                <div className="col-md-12">
-                  {/* <select
-                    className="form-select"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                  >
-                    <option value="IN">amazon.in</option>
-                    <option value="US">amazon.com</option>
-                  </select> */}
-                  <div className="custom-select-container">
-                    <select
-                      className="form-select custom-select"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    >
-                      <option value="IN" className="flag-option">
-                        amazon.in
-                      </option>
-                      <option value="US" className="flag-option">
-                        amazon.com
-                      </option>
-                    </select>
-                    <div className="flag-container">
-                      {country === "IN" && (
-                        <img
-                          src="https://flagcdn.com/w40/in.png"
-                          alt="India Flag"
-                          className="flag-icon"
-                        />
-                      )}
-                      {country === "US" && (
-                        <img
-                          src="https://flagcdn.com/w40/us.png"
-                          alt="United States Flag"
-                          className="flag-icon"
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row mt-3 mb-3">
                 <div className="col-md-10">
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="B0D3R1JQ7D"
-                    value={asin}
-                    onChange={(e) => setAsin(e.target.value)}
+                    placeholder="Enter ASIN"
+                    value={asinNo}
+                    onChange={(e) => setAsinNo(e.target.value)}
                   />
                 </div>
                 <div className="col-md-2">
                   <button
                     className="btn btn-primary search_icon"
                     type="submit"
-                    // onClick={search}
-                    onClick={handleSearch}
+                    onClick={search}
                     disabled={loading} // Disable button while loading
                   >
                     {loading ? (
@@ -519,70 +496,133 @@ const Asin = () => {
                   </button>
                 </div>
               </div>
+
               {error && (
-                <div className="alert alert-danger mt-3 poppin-regular">
+                <div className="alert alert-danger" role="alert">
                   {error}
                 </div>
               )}
 
-              {!data && !Object.keys(data).length && !error && (
-                <div className="alert alert-warning mt-3">
-                  No data available for the entered ASIN code.
-                </div>
-              )}
+              {/* <div
+                className="poppins-medium mt-1"
+                style={{ color: "darkblue" }}
+              >
+                Try Our Keyword Research Tool for Amazon!
+              </div>
 
-              {data && Object.keys(data).length > 0 && (
+              <div className="poppins-regular mt-2">
+                Find more keywords for your Amazon product listing effortlessly
+                with our Amazon Keyword Research Tool. Get insights on search
+                volume, competition, sales, and revenue data.Try our Amazon
+                Keyword Tool for free today.
+              </div> */}
+
+              {/* {data.length > 0 && (
                 <div>
-                  <Link
-                    to="/asin-details"
-                    state={{ data, dailySales: dailySales }}
-                    style={{ textDecoration: "none", color: "black" }}
-                  >
-                    <div className="row mt-3" key={data.asin}>
-                      <div className="col-2">
+                  {data.map((item) => (
+                    <div className="row">
+                      <div className="poppins-medium">Product Information</div>
+                      <div className="poppins-regular">ASIN: {item.ASIN}</div>
+                      {item.Images?.Primary?.Medium?.URL && (
                         <img
-                          src={data.product_photo}
-                          alt={data.product_title}
-                          style={{ width: "100%", height: "100px" }}
+                          onClick={() =>
+                            handleProductClick(
+                              `https://www.amazon.in/dp/${item.ASIN}`
+                            )
+                          }
+                          src={item.Images.Primary.Medium.URL}
+                          alt={item.Title}
+                          style={{ width: "150px", height: "150px" }}
                         />
+                      )}
+                      <div className="poppins-medium">
+                        Rs. {item.Offers?.Listings[0]?.Price?.Amount || 0}
                       </div>
-                      <div
-                        className="col-10 d-flex"
-                        style={{
-                          flexDirection: "column",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <div
-                          className="poppins-regular"
-                          style={{
-                            color: "grey",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {data.product_title}
-                        </div>
-                        <div className="poppins-medium">
-                          {data.country === "US"
-                            ? `$${data.product_price}`
-                            : `Rs. ${data.product_price}`}
-                        </div>
+                      <div className="poppins-regular">
+                        {item.ItemInfo?.Title.DisplayValue}
                       </div>
+                      {item.SalesRank && (
+                        <div className="poppins-regular">
+                          Website Sales Rank: {item.SalesRank}
+                        </div>
+                      )}
                     </div>
-                  </Link>
+                  ))}
                 </div>
               )}
-
               {dailySales > 0 && (
                 <div style={{ marginTop: "20px" }}>
                   <h2 className="poppins-medium" style={{ color: "blue" }}>
                     FBA fee: {dailySales.toFixed(2)}
                   </h2>
                 </div>
+              )} */}
+
+              {data.length > 0 ? (
+                <div>
+                  {data.map((item) => (
+                    <Link
+                      to="/product-details"
+                      state={{ data: item, dailySales: dailySales }}
+                      style={{ textDecoration: "none", color: "black" }}
+                    >
+                      <div className="row mt-3" key={item.ASIN}>
+                        <div className="col-4">
+                          {item.Images?.Primary?.Medium?.URL && (
+                            <img
+                              onClick={() =>
+                                handleProductClick(
+                                  `https://www.amazon.in/dp/${item?.ASIN}`
+                                )
+                              }
+                              src={item.Images.Primary.Medium.URL}
+                              alt={item.Title}
+                              style={{ width: "100%", height: "100px" }}
+                            />
+                          )}
+                        </div>
+                        <div
+                          className="col-8 d-flex"
+                          style={{
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <div
+                            className="poppins-regular"
+                            style={{
+                              color: "grey",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {item.ItemInfo?.Title.DisplayValue}
+                          </div>
+                          <div className="poppins-medium">
+                            Rs. {item.Offers?.Listings[0]?.Price?.Amount || 0}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                // <div className="poppins-medium mt-3" style={{ color: "red" }}>
+                //   No data found
+                // </div>
+                ""
               )}
+
+              {/* {dailySales > 0 && (
+          <div style={{ marginTop: "20px" }}>
+            <h2 className="poppins-medium" style={{ color: "blue" }}>
+              FBA fee: {dailySales.toFixed(2)}
+            </h2>
+          </div>
+        )} */}
+
               {data.length === 0 && (
                 <div className="row mt-2">
                   <div className="poppins-black pb-2">Search Products</div>
@@ -1034,8 +1074,8 @@ const Asin = () => {
               type="text"
               className="col-12 poppins-regular"
               placeholder="ASIN Search"
-              value={asin}
-              onChange={(e) => setAsin(e.target.value)}
+              value={asinNo}
+              onChange={(e) => setAsinNo(e.target.value)}
               style={{
                 outline: "none",
                 height: "45px",
@@ -1051,15 +1091,14 @@ const Asin = () => {
             <div
               className=" search_icon "
               type="submit"
-              // onClick={search}
-              onClick={handleSearch}
+              onClick={search}
               disabled={loading} // Disable button while loading
             >
               {loading ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
                 <i
-                  onClick={handleSearch}
+                  onClick={search}
                   className="fa-solid fa-magnifying-glass"
                   style={{
                     fontSize: "20px",
@@ -1085,22 +1124,23 @@ const Asin = () => {
             {data.map((item) => (
               <Link
                 to="/product-details"
-                state={{ data, dailySales: dailySales }}
+                state={{ data: item, dailySales: dailySales }}
                 style={{ textDecoration: "none", color: "black" }}
               >
                 <div className="row mt-3" key={item.ASIN}>
                   <div className="col-4">
-                    <img
-                      // onClick={() =>
-                      //   handleProductClick(
-                      //     `https://www.amazon.in/dp/${item?.ASIN}`
-                      //   )
-                      // }
-                      // src={item.Images.Primary.Medium.URL}
-                      src={item.product_photo}
-                      alt={item.product_title}
-                      style={{ width: "100%", height: "100px" }}
-                    />
+                    {item.Images?.Primary?.Medium?.URL && (
+                      <img
+                        onClick={() =>
+                          handleProductClick(
+                            `https://www.amazon.in/dp/${item.ASIN}`
+                          )
+                        }
+                        src={item.Images.Primary.Medium.URL}
+                        alt={item.Title}
+                        style={{ width: "100%", height: "100px" }}
+                      />
+                    )}
                   </div>
                   <div
                     className="col-8 d-flex"
@@ -1119,10 +1159,10 @@ const Asin = () => {
                         overflow: "hidden",
                       }}
                     >
-                      {item.product_title}
+                      {item.ItemInfo?.Title.DisplayValue}
                     </div>
                     <div className="poppins-medium">
-                      Rs. {item.product_price}
+                      Rs. {item.Offers?.Listings[0]?.Price?.Amount || 0}
                     </div>
                   </div>
                 </div>
@@ -1406,44 +1446,31 @@ const Asin = () => {
 
         {/* Payment Modal */}
         <Modal
-          centered
           show={showPaymentModal}
           onHide={() => setShowPaymentModal(false)}
-          dialogClassName="custom-modal"
         >
-          {/* <Modal.Header closeButton>
-            <Modal.Title className="custom-title">Subscription</Modal.Title>
-          </Modal.Header> */}
-          <Modal.Body className="custom-body">
-            <div className="modal-content-wrapper">
-              <div className="plan basic-plan">
-                <div className="plan-icon">
-                  <img
-                    src="https://via.placeholder.com/80"
-                    alt="Basic Plan Icon"
-                  />
-                </div>
-                <div className="plan-details">
-                  <h3 className="plan-title">Basic</h3>
-                  <p className="plan-description">
-                    Buy this plan and get 500 searches free for a month
-                  </p>
-                  <h4 className="plan-price">₹1997/month</h4>
-                  <Button
-                    variant="primary"
-                    className="custom-proceed-button"
-                    onClick={handlePayment1}
-                  >
-                    Buy Plan
-                  </Button>
-                </div>
-              </div>
-            </div>
+          <Modal.Header closeButton>
+            <Modal.Title>Payment Required</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            You have used all 10 free searches. Please pay ₹199 to continue
+            using the service.
           </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowPaymentModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handlePayment}>
+              Proceed to Pay
+            </Button>
+          </Modal.Footer>
         </Modal>
       </div>
     </div>
   );
 };
 
-export default Asin;
+export default CombinedComponent;

@@ -19,7 +19,7 @@ function Chatsignup() {
       const config = {
         url: "/users/auth/register",
         method: "post",
-        baseURL: "https://api.proleverage.io/api",
+        baseURL: "https://api.proleverageadmin.in/api",
         headers: { "Content-Type": "application/json" },
         data: {
           name,

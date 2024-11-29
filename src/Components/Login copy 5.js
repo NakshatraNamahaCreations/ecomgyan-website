@@ -17,9 +17,6 @@ const Login = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [user, setUser] = useState(null);
 
-  const userdata = localStorage.getItem("user");
-  console.log("userdata", userdata);
-
   function onCaptchVerify() {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
@@ -70,8 +67,14 @@ const Login = () => {
 
   async function VerifyFromServer() {
     try {
-      const cleanedPhoneNumber = ph.startsWith("91") ? ph.slice(2) : ph;
+      // const result = await window.confirmationResult.confirm(otp);
+      // const { phoneNumber } = result.user;
 
+      const cleanedPhoneNumber = ph.startsWith("91")
+        ? ph.slice(2) // Skip the first 3 characters (+91)
+        : ph;
+
+      console.log("cleanedPhoneNumber", cleanedPhoneNumber);
       const config = {
         url: "/users/auth/firebaselogin",
         method: "post",
@@ -85,8 +88,9 @@ const Login = () => {
       const response = await axios(config);
 
       if (response.status === 200) {
-        console.log("Success");
+        console.log("succedss");
         localStorage.setItem("token", response.data.token);
+        // localStorage.setItem("phoneNumber", phoneNumber);
         window.location.assign("/asin-code");
         setUser(response.data);
         setLoading(false);
@@ -95,9 +99,9 @@ const Login = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to verify. Please complete the steps.");
       setLoading(false);
       window.location.assign("/signup");
+      toast.success("Please complete the steps");
     }
   }
 

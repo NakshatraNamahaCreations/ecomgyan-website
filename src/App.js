@@ -7,19 +7,15 @@ import Courses from "./Components/Courses";
 import Tools from "./Components/Tools";
 import Login from "./Components/Login";
 import Header from "./Components/Header";
-import "./App.css";
+// import "./App.css";
 import Footer from "./Components/Footer";
 import Signup from "./Components/Signup";
 import Coursesdetails from "./Components/Coursesdetails";
 import Content from "./Components/Content";
 import Asin from "./Components/Asin";
 import Product from "./Components/Product";
-import Chat from "./Components/Chat";
-import Privacy from "./Components/Privacy";
-import Terms from "./Components/Terms";
-import Refund from "./Components/Refund";
-import Chatlogin from "./Components/Chatlogin";
-import Chatsignup from "./Components/Chatsignup";
+import Asindetails from "./Components/Asindetails";
+import Productdetails from "./Components/Productdetails";
 import Header1 from "./Components/Header1";
 
 function App() {
@@ -27,11 +23,12 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route
-          path="/"
+          path="/home"
           element={
             <>
               <Header />
-              <Header1 /> <Home />
+              <Header1 />
+              <Home />
               <Footer />
             </>
           }
@@ -41,6 +38,7 @@ function App() {
           element={
             <>
               <Header />
+              <Header1 />
               <About />
               <Footer />
             </>
@@ -51,6 +49,7 @@ function App() {
           element={
             <>
               <Header />
+              <Header1 />
               <Blogs />
               <Footer />
             </>
@@ -61,6 +60,7 @@ function App() {
           element={
             <>
               <Header />
+              <Header1 />
               <Courses />
               <Footer />
             </>
@@ -71,13 +71,14 @@ function App() {
           element={
             <>
               <Header />
+              <Header1 />
               <Tools />
               <Footer />
             </>
           }
         />
         <Route
-          path="/login"
+          path="/"
           element={
             <>
               <Login />
@@ -93,38 +94,13 @@ function App() {
           }
         />
         <Route
-          path="/chatlogin"
-          element={
-            <>
-              <Chatlogin />
-            </>
-          }
-        />
-        <Route
-          path="/chatsignup"
-          element={
-            <>
-              <Chatsignup />
-            </>
-          }
-        />
-        <Route
           path="/coursesdetail"
           element={
             <>
               <Header />
+              <Header1 />
               <Coursesdetails />
               <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/chat"
-          element={
-            <>
-              <Header />
-              <Chat />
-              {/* <Footer /> */}
             </>
           }
         />
@@ -133,6 +109,7 @@ function App() {
           element={
             <>
               <Header />
+              <Header1 />
               <Content />
               <Footer />
             </>
@@ -143,6 +120,7 @@ function App() {
           element={
             <>
               <Header />
+              <Header1 />
               <Asin />
               <Footer />
             </>
@@ -153,37 +131,30 @@ function App() {
           element={
             <>
               <Header />
+              <Header1 />
               <Product />
               <Footer />
             </>
           }
         />
         <Route
-          path="/privacy-policy"
+          path="/asin-details"
           element={
             <>
               <Header />
-              <Privacy />
+              <Header1 />
+              <Asindetails />
               <Footer />
             </>
           }
         />
         <Route
-          path="/termsofuse"
+          path="/product-details"
           element={
             <>
               <Header />
-              <Terms />
-              <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/refund-policy"
-          element={
-            <>
-              <Header />
-              <Refund />
+              <Header1 />
+              <Productdetails />
               <Footer />
             </>
           }

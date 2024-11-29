@@ -7,24 +7,68 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
 
+  // const submit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!name || !email || !phoneNumber) {
+  //     alert("All fields are required");
+  //     return;
+  //   }
+
+  //   try {
+  //     const config = {
+  //       url: "/users/auth/firebaseregister",
+  //       method: "post",
+  //       baseURL: "https://api.proleverageadmin.in/api",
+  //       headers: { "Content-Type": "application/json" },
+  //       data: {
+  //         name,
+  //         email,
+
+  //         phoneNumber,
+  //       },
+  //     };
+
+  //     const res = await axios(config);
+
+  //     if (res.status === 200) {
+  //       console.log("User registered:", res.data.message);
+
+  //       localStorage.setItem("userToken", res.data.token);
+
+  //       // localStorage.setItem("user", JSON.stringify(res.data.user));
+  //       window.location.assign("/");
+
+  //       alert("Registered successfully");
+
+  //       // Reset fields or redirect user
+  //       setName("");
+  //       setEmail("");
+  //       setPassword("");
+  //       setphoneNumber("");
+  //     }
+  //   } catch (error) {
+  //     console.log("Error during registration:", error);
+  //   }
+  // };
+
   const submit = async (e) => {
     e.preventDefault();
 
-    if (!name || !email || !password) {
+    if (!name || !email || !phoneNumber) {
       alert("All fields are required");
       return;
     }
 
     try {
       const config = {
-        url: "/users/auth/register",
+        url: "/users/auth/firebaseregister",
         method: "post",
-        baseURL: "https://api.proleverage.io/api",
+        baseURL: "https://api.proleverageadmin.in/api",
         headers: { "Content-Type": "application/json" },
         data: {
           name,
           email,
-          password,
           phoneNumber,
         },
       };
@@ -35,9 +79,9 @@ function Signup() {
         console.log("User registered:", res.data.message);
 
         localStorage.setItem("userToken", res.data.token);
-
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        window.location.assign("/login");
+
+        window.location.assign("/");
 
         alert("Registered successfully");
 
@@ -48,24 +92,34 @@ function Signup() {
         setphoneNumber("");
       }
     } catch (error) {
-      console.log("Error during registration:", error);
+      // Check if the error is from the backend and display the error message
+      if (error.response && error.response.data && error.response.data.error) {
+        alert(error.response.data.error); // Show error message from backend
+      } else {
+        console.log("An unexpected error occurred:", error.message);
+        alert("Something went wrong. Please try again later.");
+      }
     }
   };
 
   return (
     <div className="container">
-      <div className="row mt-2 col-md-12 justify-content-center">
+      <div className="row mt-5 col-md-12 justify-content-center">
         <div className="col-md-4">
           <div className="d-flex justify-content-center">
-            <img
-              src="./images/pro.png"
-              alt="loading..."
-              style={{ height: "60px", textAlign: "center" }}
-              className="mt-5"
-            />
+            <a className="navbar-brand" to="/">
+              <img
+                src="./images/plogo.png"
+                alt="loading...."
+                style={{
+                  height: "50px",
+                  width: "200px",
+                }}
+              />
+            </a>
           </div>
 
-          <div className="login_heading">Sign Up to Proleverage</div>
+          {/* <div className="login_heading">Sign Up to Proleverage</div> */}
           <div className="mt-3">
             <div className="label">Name</div>
             <input
@@ -91,15 +145,6 @@ function Signup() {
               placeholder="Please Enter Mobilenumber"
               className="input_box"
               onChange={(e) => setphoneNumber(e.target.value)}
-            />
-          </div>
-          <div className="mt-3">
-            <div className="label">Password</div>
-            <input
-              type="text"
-              placeholder="Please Enter Password"
-              className="input_box"
-              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io("https://api.proleverage.io");
+const socket = io("https://api.proleverageadmin.in");
 
 function Chat() {
   const [chats, setChats] = useState([]);
@@ -21,7 +21,7 @@ function Chat() {
 
   const API = (token) =>
     axios.create({
-      baseURL: "https://api.proleverage.io/",
+      baseURL: "https://api.proleverageadmin.in/",
       headers: { Authorization: token },
     });
 
@@ -44,7 +44,7 @@ function Chat() {
       const config = {
         url: "/users/auth/login",
         method: "post",
-        baseURL: "https://api.proleverage.io/api",
+        baseURL: "https://api.proleverageadmin.in/api",
         headers: { "content-type": "application/json" },
         data: { email, password },
       };

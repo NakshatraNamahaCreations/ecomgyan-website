@@ -5,12 +5,12 @@ import OtpInput from "otp-input-react";
 import { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { auth } from "../firebase.config";
+import { auth } from "./firebase.config";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
 import axios from "axios";
 
-const Login = () => {
+const App = () => {
   const [otp, setOtp] = useState("");
   const [ph, setPh] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,14 +59,16 @@ const Login = () => {
     try {
       const result = await window.confirmationResult.confirm(otp);
       const { phoneNumber } = result.user;
+
       // Call your backend to authenticate
       const response = await axios.post(
-        "https://api.proleverageadmin.in/api/users/auth/firebaselogin",
+        "https://api.proleverageadmin.in/api/users/auth/firebaseregister",
         { phoneNumber }
       );
+
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("phoneNumber", phoneNumber);
-      window.location.assign("/asin-code");
+
       setUser(response.data);
       setLoading(false);
     } catch (error) {
@@ -76,9 +78,6 @@ const Login = () => {
       toast.error("Invalid OTP");
     }
   }
-
-  const token = localStorage.getItem("token");
-  console.log("token", token);
 
   return (
     <section className="bg-emerald-500 flex items-center justify-center h-screen">
@@ -155,4 +154,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default App;

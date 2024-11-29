@@ -19,139 +19,50 @@ function Header() {
   };
 
   return (
-    <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
-        <div className="container-fluid mheader-mobile">
-          <Link className="navbar-brand" to="/">
+    <div>
+      <nav className="navbar navbar-expand-lg mobile_header navbar-light bg-light">
+        <div className="container-fluid">
+          <a className="navbar-brand" href="/">
             <img
-              src="./images/eg.png"
+              src="./images/plogo.png"
               alt="loading...."
               style={{
-                height: "60px",
+                height: "50px",
+                width: "200px",
               }}
             />
-          </Link>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div
-            className="collapse m-header  navbar-collapse"
-            id="navbarSupportedContent"
-          >
-            <ul className="navbar-nav  mb-2 mb-lg-0">
-              <li
-                className={`nav-item ${
-                  location.pathname === "/" ? "active" : ""
-                }`}
-              >
-                <Link className="nav-link poppins-regular" to="/">
-                  Home
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  location.pathname === "/about" ? "active" : ""
-                }`}
-              >
-                <Link className="nav-link poppins-regular" to="/about">
-                  About Us
-                </Link>
-              </li>
+          </a>
 
-              <li className="nav-item dropdown">
-                <a
-                  className="poppins-regular nav-link dropdown-toggle"
-                  href="#"
-                  id="toolsDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Tools
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="toolsDropdown">
-                  <li>
-                    <Link
-                      className="dropdown-item poppins-regular"
-                      to="/asin-code"
-                    >
-                      ASIN Code
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item poppins-regular"
-                      to="/product-search"
-                    >
-                      Product Search
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-              <li
-                className={`nav-item ${
-                  location.pathname === "/courses" ? "active" : ""
-                }`}
+          <ul className="navbar-nav me-0 mb-2 mb-lg-0">
+            <li className="nav-item dropdown">
+              <a
+                className="poppins-regular nav-link dropdown-toggle"
+                href="#"
+                id="toolsDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                <Link className="nav-link poppins-regular" to="/courses">
-                  Courses
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  location.pathname === "/chat" ? "active" : ""
-                }`}
-              >
-                <Link className="nav-link poppins-regular" to="/chat">
-                  Support
-                </Link>
-              </li>
-              <li
-                className={`nav-item ${
-                  location.pathname === "/blogs" ? "active" : ""
-                }`}
-              >
-                <Link className="nav-link poppins-regular" to="/blogs">
-                  Blog
-                </Link>
-              </li>
-              {userstoredata ? (
-                <li
-                  className={`nav-item ${
-                    location.pathname === "/profile" ? "active" : ""
-                  }`}
-                >
+                <i
+                  className="fa-solid fa-circle-user"
+                  style={{ fontSize: "25px" }}
+                ></i>
+              </a>
+              <ul className="dropdown-menu" aria-labelledby="toolsDropdown">
+                <li>
                   <Link
-                    onClick={handleremove}
-                    className="nav-link poppins-regular"
+                    className="dropdown-item poppins-regular"
+                    to="/asin-code"
                   >
                     Logout
                   </Link>
                 </li>
-              ) : (
-                <li
-                  className={`nav-item ${
-                    location.pathname === "/login" ? "active" : ""
-                  }`}
-                >
-                  <Link className="nav-link poppins-regular" to="/login">
-                    Login
-                  </Link>
-                </li>
-              )}
-            </ul>
-          </div>
+              </ul>
+            </li>
+          </ul>
         </div>
       </nav>
-    </>
+    </div>
   );
 }
 

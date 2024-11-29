@@ -1,32 +1,38 @@
 {
-  "name": "Proleverage",
+  "name": "otp_project",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@canvasjs/react-charts": "^1.0.2",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@firebase/auth": "^1.8.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@mui/material": "^5.15.19",
+    "@mui/material": "^6.1.6",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
-    "chart.js": "^4.4.3",
+    "chart.js": "^4.4.6",
     "emoji-mart": "^5.6.0",
+    "firebase": "^9.15.0",
+    "otp-input-react": "^0.3.0",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.10.1",
+    "react-bootstrap": "^2.10.5",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-multi-carousel": "^2.8.4",
-    "react-pdf": "^7.7.1",
-    "react-router-dom": "^6.22.3",
+    "react-hot-toast": "^2.4.0",
+    "react-icons": "^4.7.1",
+    "react-multi-carousel": "^2.8.5",
+    "react-pdf": "^9.1.1",
+    "react-phone-input-2": "^2.15.1",
+    "react-router-dom": "^6.28.0",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1",
-    "socket.io-client": "^4.7.5",
+    "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -52,5 +58,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.2.4"
   }
 }

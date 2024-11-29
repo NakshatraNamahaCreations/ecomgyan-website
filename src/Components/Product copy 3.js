@@ -16,7 +16,7 @@ const CombinedComponent = () => {
 
     try {
       const res = await axios.get(
-        `https://api.proleverage.io/api/amazon/keyword`,
+        `https://api.proleverageadmin.in/api/amazon/keyword`,
         {
           params: { keywords },
         }

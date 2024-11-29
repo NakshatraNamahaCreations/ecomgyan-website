@@ -8,7 +8,6 @@ import "react-phone-input-2/lib/style.css";
 import { auth } from "../firebase.config";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
-import axios from "axios";
 
 const Login = () => {
   const [otp, setOtp] = useState("");
@@ -54,31 +53,21 @@ const Login = () => {
       });
   }
 
-  async function onOTPVerify() {
+  function onOTPVerify() {
     setLoading(true);
-    try {
-      const result = await window.confirmationResult.confirm(otp);
-      const { phoneNumber } = result.user;
-      // Call your backend to authenticate
-      const response = await axios.post(
-        "https://api.proleverageadmin.in/api/users/auth/firebaselogin",
-        { phoneNumber }
-      );
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("phoneNumber", phoneNumber);
-      window.location.assign("/asin-code");
-      setUser(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-      window.location.assign("/signup");
-      toast.error("Invalid OTP");
-    }
+    window.confirmationResult
+      .confirm(otp)
+      .then(async (res) => {
+        console.log(res);
+        setUser(res.user);
+        setLoading(false);
+        window.location.assign("/asin-code");
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   }
-
-  const token = localStorage.getItem("token");
-  console.log("token", token);
 
   return (
     <section className="bg-emerald-500 flex items-center justify-center h-screen">
@@ -92,7 +81,7 @@ const Login = () => {
         ) : (
           <div className="w-80 flex flex-col gap-4 rounded-lg p-4">
             <h1 className="text-center leading-normal text-white font-medium text-3xl mb-6">
-              Welcome to <br /> proleverage
+              Welcome to <br /> CODE A PROGRAM
             </h1>
             {showOTP ? (
               <>
@@ -136,7 +125,6 @@ const Login = () => {
                   Verify your phone number
                 </label>
                 <PhoneInput country={"in"} value={ph} onChange={setPh} />
-
                 <button
                   onClick={onSignup}
                   className="bg-emerald-600 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
@@ -144,7 +132,7 @@ const Login = () => {
                   {loading && (
                     <CgSpinner size={20} className="mt-1 animate-spin" />
                   )}
-                  <span>Send OTP</span>
+                  <span>Send code via SMS</span>
                 </button>
               </>
             )}

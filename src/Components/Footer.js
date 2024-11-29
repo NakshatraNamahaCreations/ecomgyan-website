@@ -21,13 +21,14 @@ function Footer() {
       </div> */}
       <div className="col-md-3">
         <img
-          src="./images/pro.png"
+          src="./images/plogo.png"
+          alt="loading...."
           style={{
-            height: "60px",
+            height: "50px",
+            width: "200px",
           }}
-          alt="loading..."
         />
-        <div
+        {/* <div
           className="poppins-regular mt-3"
           style={{ color: "#b6aeae", fontSize: "13px" }}
         >
@@ -39,7 +40,7 @@ function Footer() {
         >
           Great lesson ideas and lesson plans for ESL teachers! Educators can
           customize lesson plans to best.
-        </div>
+        </div> */}
       </div>
       <div className="col-md-3 text-center mt-3">
         <div className=" f-heading poppins-semibold">Company</div>
@@ -52,9 +53,9 @@ function Footer() {
         <Link to="/asin-code" style={{ textDecoration: "none" }}>
           <div className="f-desc poppins-regular">Tools</div>
         </Link>
-        <Link to="/courses" style={{ textDecoration: "none" }}>
+        {/* <Link to="/courses" style={{ textDecoration: "none" }}>
           <div className="f-desc poppins-regular">Courses</div>
-        </Link>
+        </Link> */}
         <Link to="/blogs" style={{ textDecoration: "none" }}>
           <div className="f-desc poppins-regular">Blog</div>
         </Link>

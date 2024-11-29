@@ -40,7 +40,7 @@ function Home() {
   const getCourses = async () => {
     try {
       const response = await axios.get(
-        "https://api.proleverage.io/api/mycourse/getallcourses"
+        "https://api.proleverageadmin.in/api/mycourse/getallcourses"
       );
       if (response.status === 200) {
         getAllcourse(response.data.data);
@@ -181,7 +181,7 @@ function Home() {
           </div>
         </div>
         <br /> <br />
-        <div>
+        {/* <div>
           <h2 className="poppins-medium text-center">Featured classes</h2>
           <br />
           <div className="row">
@@ -202,7 +202,7 @@ function Home() {
                     <div className="courseCardImage-0-1-334">
                       <img
                         className="courseCardImage-0-1-334"
-                        src={`https://api.proleverage.io/course/${data.thumbnailImage}`}
+                        src={`https://api.proleverageadmin.in/course/${data.thumbnailImage}`}
                         alt=""
                       />
                     </div>
@@ -233,7 +233,7 @@ function Home() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
         <br /> <br />
         <div className="row">
           <div className="col-md-6 mt-2">

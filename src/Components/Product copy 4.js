@@ -209,8 +209,6 @@ const Product = () => {
       handler: async function (response) {
         await verifyPayment(response.razorpay_payment_id);
         alert("Payment successful! 500 searches added to your account.");
-        window.location.assign("/product-search");
-        setShowPaymentModal(false);
         // setIsLoading(false); // Re-enable button after success
       },
       prefill: {
@@ -854,8 +852,8 @@ const Product = () => {
             ></i>
           </div> */}
           <div className="col-md-2">
-            <div
-              // className="btn btn-primary search_icon"
+            <button
+              className="btn btn-primary search_icon"
               type="submit"
               onClick={handleSearch}
               disabled={loading}
@@ -863,19 +861,9 @@ const Product = () => {
               {loading ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
-                <i
-                  onClick={handleSearch}
-                  className="fa-solid fa-magnifying-glass"
-                  style={{
-                    fontSize: "20px",
-                    backgroundColor: "darkblue",
-                    color: "white",
-                    padding: "12px",
-                    borderRadius: "5px",
-                  }}
-                ></i>
+                "Search"
               )}
-            </div>
+            </button>
           </div>
         </div>
 
@@ -1244,7 +1232,8 @@ const Product = () => {
               <div className="plan-details">
                 <h3 className="plan-title">Basic</h3>
                 <p className="plan-description">
-                  Buy this plan and get 500 searches free for a month
+                  25+ episodic series, 10+ movies & specials! Watch on any
+                  phone, tablet, computer, or TV.
                 </p>
                 <h4 className="plan-price">₹1997/month</h4>
                 <Button

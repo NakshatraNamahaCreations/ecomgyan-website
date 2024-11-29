@@ -185,68 +185,12 @@ const Asin = () => {
   //   rzp1.open();
   // };
 
-  // const handlePayment1 = async () => {
-  //   // if (!userData) {
-  //   //   alert("User not logged in. Please log in and try again.");
-  //   //   return;
-  //   // }
-
-  //   const isRazorpayLoaded = await loadRazorpayScript();
-  //   if (!isRazorpayLoaded) {
-  //     alert("Failed to load Razorpay. Please try again.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const orderId = await createOrder(); // Create Razorpay order
-  //     if (!orderId) {
-  //       throw new Error("Order ID not generated");
-  //     }
-
-  //     const options = {
-  //       key: "rzp_live_yzuuxyiOlu7Oyj", // Replace with your Razorpay key
-  //       amount: 100, // Amount in paise
-  //       currency: "INR",
-  //       name: "Your Company Name",
-  //       description: "Payment for additional search count",
-  //       order_id: orderId,
-  //       handler: async function (response) {
-  //         try {
-  //           // Call backend to verify the payment
-  //           const verifyResponse = await axios.get(
-  //             `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
-  //             {
-  //               params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId as query parameter
-  //             }
-  //           );
-  //           if (verifyResponse.data.paymentStatus) {
-  //             alert("Payment successful! Search count updated.");
-  //           } else {
-  //             alert("Payment verification failed. Please contact support.");
-  //           }
-  //         } catch (error) {
-  //           console.error("Error verifying payment:", error);
-  //           alert("Payment verification failed. Please contact support.");
-  //         }
-  //       },
-  //       prefill: {
-  //         name: userData?.name || "Customer Name",
-  //         email: userData?.email || "customer@example.com",
-  //       },
-  //       theme: {
-  //         color: "#3399cc",
-  //       },
-  //     };
-
-  //     const rzp1 = new window.Razorpay(options);
-  //     rzp1.open();
-  //   } catch (error) {
-  //     console.error("Error handling payment:", error);
-  //     alert("Failed to process payment. Please try again.");
-  //   }
-  // };
-
   const handlePayment1 = async () => {
+    // if (!userData) {
+    //   alert("User not logged in. Please log in and try again.");
+    //   return;
+    // }
+
     const isRazorpayLoaded = await loadRazorpayScript();
     if (!isRazorpayLoaded) {
       alert("Failed to load Razorpay. Please try again.");
@@ -268,26 +212,21 @@ const Asin = () => {
         order_id: orderId,
         handler: async function (response) {
           try {
-            // Verify payment on the backend
+            // Call backend to verify the payment
             const verifyResponse = await axios.get(
               `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
               {
-                params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId dynamically
+                params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId as query parameter
               }
             );
-
             if (verifyResponse.data.paymentStatus) {
-              // Redirect to success page
-              setShowPaymentModal(false);
-              window.location.href = "/asin-code";
+              alert("Payment successful! Search count updated.");
             } else {
-              // Redirect to failure page if payment status is false
-              window.location.href = "/payment-failure";
+              alert("Payment verification failed. Please contact support.");
             }
           } catch (error) {
             console.error("Error verifying payment:", error);
-            // Redirect to failure page on error
-            window.location.href = "/payment-failure";
+            alert("Payment verification failed. Please contact support.");
           }
         },
         prefill: {
@@ -300,14 +239,6 @@ const Asin = () => {
       };
 
       const rzp1 = new window.Razorpay(options);
-
-      // Handle payment closure by the user
-      rzp1.on("payment.failed", function (response) {
-        console.error("Payment failed:", response.error);
-        // Redirect to failure page on user closure
-        window.location.href = "/payment-failure";
-      });
-
       rzp1.open();
     } catch (error) {
       console.error("Error handling payment:", error);
@@ -1426,7 +1357,8 @@ const Asin = () => {
                 <div className="plan-details">
                   <h3 className="plan-title">Basic</h3>
                   <p className="plan-description">
-                    Buy this plan and get 500 searches free for a month
+                    25+ episodic series, 10+ movies & specials! Watch on any
+                    phone, tablet, computer, or TV.
                   </p>
                   <h4 className="plan-price">₹1997/month</h4>
                   <Button
