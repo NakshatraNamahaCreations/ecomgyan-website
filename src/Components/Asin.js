@@ -42,7 +42,7 @@ const Asin = () => {
     }
   }, []);
 
-  console.log("userData===suman", userData?._id);
+  console.log("userData===suman", userData);
 
   const loadScript = (src) => {
     return new Promise((resolve) => {
@@ -272,7 +272,7 @@ const Asin = () => {
             const verifyResponse = await axios.get(
               `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
               {
-                params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId dynamically
+                params: { userId: userData?._id }, // Pass userId dynamically
               }
             );
 
@@ -315,6 +315,8 @@ const Asin = () => {
     }
   };
 
+  // 672f4cab5ec0d6f27393a10e
+
   // // Verify payment and update user search limit
   // const verifyPayment = async (paymentId) => {
   //   try {
@@ -342,7 +344,7 @@ const Asin = () => {
       const response = await axios.get(
         "https://api.proleverageadmin.in/api/amazon/affiliatekeyword1",
         {
-          params: { asin, country, userId: "672f4cab5ec0d6f27393a10e" },
+          params: { asin, country, userId: userData?._id },
         }
       );
 

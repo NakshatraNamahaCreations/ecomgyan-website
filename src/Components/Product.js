@@ -135,7 +135,7 @@ const Product = () => {
         {
           amount: 1.0, // Amount in paise (₹1.00)
           currency: "INR",
-          userId: "672f4cab5ec0d6f27393a10e", // Pass user ID from localStorage
+          userId: userData?._id, // Pass user ID from localStorage
         }
       );
       return response.data.orderId;
@@ -232,7 +232,7 @@ const Product = () => {
       await axios.get(
         `https://api.proleverageadmin.in/api/payment/payment/${paymentId}`,
         {
-          params: { userId: "672f4cab5ec0d6f27393a10e" },
+          params: { userId: userData?._id },
         }
       );
     } catch (error) {
@@ -252,7 +252,7 @@ const Product = () => {
       const response = await axios.get(
         "https://api.proleverageadmin.in/api/amazon/getitems1",
         {
-          params: { query, userId: "672f4cab5ec0d6f27393a10e", country }, // Pass the user ID
+          params: { query, userId: userData?._id, country }, // Pass the user ID
         }
       );
       setData(response.data.data.products || []);
