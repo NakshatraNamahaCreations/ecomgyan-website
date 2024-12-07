@@ -131,13 +131,10 @@ const Asin = () => {
   // Payment gateway
   const createOrder = async () => {
     try {
-      const response = await axios.post(
-        "https://api.proleverageadmin.in/orders",
-        {
-          amount: 100, // Amount in paise (₹1997)
-          currency: "INR",
-        }
-      );
+      const response = await axios.post("http://localhost:8082/orders", {
+        amount: 100, // Amount in paise (₹1997)
+        currency: "INR",
+      });
       setOrderId(response.data.order_id); // Save order ID for later verification
       return response.data.order_id;
     } catch (error) {
@@ -214,7 +211,7 @@ const Asin = () => {
           try {
             // Call backend to verify the payment
             const verifyResponse = await axios.get(
-              `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
+              `http://localhost:8082/api/payment/payment/${response.razorpay_payment_id}`,
               {
                 params: { userId: "672f4cab5ec0d6f27393a10e" }, // Pass userId as query parameter
               }
@@ -250,7 +247,7 @@ const Asin = () => {
   // const verifyPayment = async (paymentId) => {
   //   try {
   //     await axios.get(
-  //       `https://api.proleverageadmin.in/api/payment/payment/${paymentId}`,
+  //       `http://localhost:8082/api/payment/payment/${paymentId}`,
   //       {
   //         params: { userId: "672f4cab5ec0d6f27393a10e" },
   //       }
@@ -271,7 +268,7 @@ const Asin = () => {
 
     try {
       const response = await axios.get(
-        "https://api.proleverageadmin.in/api/amazon/affiliatekeyword1",
+        "http://localhost:8082/api/amazon/affiliatekeyword1",
         {
           params: { asin, country, userId: "672f4cab5ec0d6f27393a10e" },
         }

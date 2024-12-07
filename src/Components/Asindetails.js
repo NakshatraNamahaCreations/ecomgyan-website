@@ -7,18 +7,19 @@ function Asindetails() {
 
   const data = location.state?.data;
   const dailySales = location.state?.dailySales;
-  console.log("data=====", dailySales);
+  console.log("data=====", data);
 
   const [referralFee, setReferralFee] = useState(0);
   const [closingFee, setClosingFee] = useState(0);
   const [sales, setSales] = useState(0);
   const [costPerUnit, setCostPerUnit] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [randomGeneratedNumber, setRandomGeneratedNumber] = useState(0);
 
   // Equivalent to initState
   useEffect(() => {
     calculateReferralFee();
-    calculateClosingFee();
+
     // calculateSales();
 
     // Equivalent of Future.delayed
@@ -56,52 +57,6 @@ function Asindetails() {
       console.log("Price8 - ", finalPrice);
     }
   };
-
-  const calculateClosingFee = () => {
-    let price = parseFloat(data.product_price || 0);
-    let finalPrice;
-
-    if (price <= 250) {
-      finalPrice = 4 * 1.18;
-      setClosingFee(finalPrice);
-    } else if (price >= 251 && price <= 500) {
-      setClosingFee(9);
-    } else if (price >= 501 && price <= 1000) {
-      setClosingFee(30);
-    } else {
-      setClosingFee(61);
-    }
-  };
-
-  // const calculateSales = () => {
-  //   let myRank = parseInt(
-  //     data.BrowseNodeInfo?.WebsiteSalesRank.SalesRank || "1000"
-  //   );
-  //   let mySales = 0;
-
-  //   if (myRank <= 10) {
-  //     mySales = (238000 / myRank / 80) * 3;
-  //     setSales(Math.round(mySales));
-  //   } else if (myRank >= 11 && myRank <= 50) {
-  //     mySales = (238000 / myRank / 25) * 3;
-  //     setSales(Math.round(mySales));
-  //   } else if (myRank >= 51 && myRank <= 100) {
-  //     mySales = (238000 / myRank / 15) * 3;
-  //     setSales(Math.round(mySales));
-  //   } else if (myRank >= 101 && myRank <= 1000) {
-  //     mySales = (238000 / myRank / 10) * 3;
-  //     setSales(Math.round(mySales));
-  //   } else {
-  //     mySales = (238000 / myRank / 4) * 3;
-  //     setSales(Math.round(mySales));
-  //   }
-  // };
-
-  // const calculateCostPerUnit = () => {
-  //   const cost = (referralFee + closingFee + 80) * 1.18;
-  //   setCostPerUnit(cost);
-  //   console.log("CostPerUnit = ", cost);
-  // };
 
   const calculateCostPerUnit = () => {
     const referral = referralFee || 0;
@@ -184,7 +139,25 @@ function Asindetails() {
   const productPrice = parseFloat(
     data.product_price.replace(/[^0-9.]/g, "") || 0
   );
-  const salesestimate = convertedVolume * productPrice;
+  // const salesestimate = convertedVolume * productPrice;
+
+  useEffect(() => {
+    if (productPrice >= 0 && productPrice <= 250) {
+      setClosingFee(25);
+    } else if (productPrice >= 251 && productPrice <= 500) {
+      setClosingFee(20);
+    } else if (productPrice >= 501 && productPrice <= 1000) {
+      setClosingFee(25);
+    } else if (productPrice > 1000) {
+      setClosingFee(50);
+    } else {
+      setClosingFee(0); // Fallback for invalid product price
+    }
+  }, [productPrice]);
+
+  console.log("Closing Fee", closingFee);
+
+  const salesestimate = convertedVolume;
 
   const Revenueestimate = convertedVolume * productPrice;
 
@@ -194,6 +167,67 @@ function Asindetails() {
   console.log("Product Price:", productPrice);
   console.log("Sales Estimate:", salesestimate);
 
+  // const generateRandomMultiplier = (min, max) => {
+  //   // Generate a random number between min and max
+  //   return Math.random() * (max - min) + min;
+  // };
+
+  // const generateRandomMultiplier = (min, max) => {
+  //   // Generate a random number between min and max and fix to 3 decimal places
+  //   const randomValue = Math.random() * (max - min) + min;
+  //   return parseFloat(randomValue.toFixed(3)); // Ensure the result has 3 decimal places
+  // };
+
+  // const randomNumberGenerate = (salesestimate) => {
+  //   const minMultiplier = 1.101; // Minimum multiplier
+  //   const maxMultiplier = 1.501; // Maximum multiplier
+
+  //   const randomMultiplier = generateRandomMultiplier(
+  //     minMultiplier,
+  //     maxMultiplier
+  //   );
+  //   console.log("Random Multiplier:", randomMultiplier);
+
+  //   const result = randomMultiplier * salesestimate; // Multiply random multiplier with salesestimate
+  //   console.log("Result:", result);
+
+  //   return result.toFixed(2); // Return the result rounded to 2 decimal places
+  // };
+
+  // const randomGeneratedNumber = randomNumberGenerate(salesestimate);
+
+  // console.log("Random Generated Number:", randomGeneratedNumber);
+
+  const generateRandomMultiplier = (min, max) => {
+    const randomValue = Math.random() * (max - min) + min;
+    return parseFloat(randomValue.toFixed(3)); // Ensure the result has 3 decimal places
+  };
+
+  const randomNumberGenerate = (salesestimate) => {
+    const minMultiplier = 1.101;
+    const maxMultiplier = 1.501;
+
+    const randomMultiplier = generateRandomMultiplier(
+      minMultiplier,
+      maxMultiplier
+    );
+    console.log("Random Multiplier:", randomMultiplier);
+
+    const result = randomMultiplier * salesestimate; // Multiply random multiplier with salesestimate
+    console.log("Result:", result);
+
+    setRandomGeneratedNumber(result.toFixed(2)); // Update the state
+  };
+
+  // Call the random number generator once when the component mounts
+  useEffect(() => {
+    randomNumberGenerate(salesestimate);
+  }, [salesestimate]);
+
+  console.log("randomGeneratedNumber", randomGeneratedNumber);
+  const revenue = randomGeneratedNumber * data?.product_price;
+
+  console.log("revenue", revenue);
   return (
     <div className="container">
       <div className="row" style={{ justifyContent: "center" }}>
@@ -245,13 +279,12 @@ function Asindetails() {
                   </span>
                 </div>
                 <div className="poppins-medium" style={{ color: "white" }}>
-                  <span style={{ textDecoration: "line-through" }}>
-                    {" "}
-                    {/* ₹ {data.product_original_price}{" "} */}
+                  {/* <span style={{ textDecoration: "line-through" }}>
+                 
                     {data.country === "US"
                       ? `$${data.product_original_price}`
                       : `Rs. ${data.product_original_price}`}
-                  </span>
+                  </span> */}
                   <span className="poppins-medium mx-1">
                     {" "}
                     {/* ₹ {data.product_price} */}
@@ -361,7 +394,7 @@ function Asindetails() {
                     fontWeight: "bold",
                   }}
                 >
-                  {convertedVolume}
+                  {randomGeneratedNumber}
                   <span>
                     <i
                       className="fa-solid fa-arrow-up mx-2"
@@ -391,9 +424,7 @@ function Asindetails() {
               className="poppins-regular"
               style={{ fontWeight: "bold", fontSize: "13px" }}
             >
-              {data.country === "US"
-                ? `$${Revenueestimate}`
-                : ` ₹ ${Revenueestimate}`}
+              {data.country === "US" ? `$${revenue}` : ` ₹ ${revenue}`}
               {/* {Revenueestimate} */}
             </div>
           </div>

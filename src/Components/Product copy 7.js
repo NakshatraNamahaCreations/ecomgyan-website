@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 
 const Product = () => {
@@ -19,8 +19,15 @@ const Product = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState(null);
-
+  const [keywords, setKeywords] = useState({});
+  const [keydata, setkeydata] = useState([]);
+  const navigate = useNavigate();
+  const [salesvalume, setsalesvalume] = useState("");
+  const [productprice, setproductprice] = useState("");
   const [userData, setUserdata] = useState(null);
+
+  const [clickdata, setclickdata] = useState(null);
+  const [randomGeneratedNumber, setRandomGeneratedNumber] = useState(0);
 
   useEffect(() => {
     // Retrieve the user data from localStorage
@@ -41,24 +48,7 @@ const Product = () => {
     }
   }, []);
 
-  console.log("userData===suman", userData?._id);
-
-  const loadScript = (src) => {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-
-      script.src = src;
-
-      script.onload = () => {
-        resolve(true);
-      };
-      script.onerror = () => {
-        resolve(false);
-      };
-
-      document.body.appendChild(script);
-    });
-  };
+  console.log("userData===suman", "6749afc4d3e0ef7428b5a09e");
 
   const calculateFees = () => {
     let referralFee;
@@ -94,20 +84,11 @@ const Product = () => {
     });
   };
 
-  const calculateDailySales = (itemPrice) => {
-    const estimatedDailySales = itemPrice * 0.1;
-    setDailySales(estimatedDailySales);
-  };
-
   useEffect(() => {
     if (price) {
       calculateFees();
     }
   }, [price]);
-
-  const handleProductClick = (url) => {
-    window.location.href = url;
-  };
 
   console.log("data====", data);
 
@@ -135,7 +116,7 @@ const Product = () => {
         {
           amount: 1.0, // Amount in paise (₹1.00)
           currency: "INR",
-          userId: "672f4cab5ec0d6f27393a10e", // Pass user ID from localStorage
+          userId: "6749afc4d3e0ef7428b5a09e", // Pass user ID from localStorage
         }
       );
       return response.data.orderId;
@@ -143,45 +124,6 @@ const Product = () => {
       console.error("Error creating Razorpay order:", error);
     }
   };
-
-  // Handle the Razorpay payment screen
-  // const handlePayment1 = async () => {
-  //   const isRazorpayLoaded = await loadRazorpayScript();
-  //   if (!isRazorpayLoaded) {
-  //     alert("Failed to load Razorpay. Please try again.");
-  //     return;
-  //   }
-
-  //   const orderId = await createOrder();
-  //   if (!orderId) {
-  //     alert("Failed to create order. Please try again.");
-  //     return;
-  //   }
-
-  //   const options = {
-  //     key: "rzp_live_yzuuxyiOlu7Oyj", // Replace with your Razorpay key
-  //     amount: 1.0, // Amount in paise
-  //     currency: "INR",
-  //     name: "Your Company Name",
-  //     description: "Payment for additional search count",
-  //     order_id: orderId,
-  //     handler: async function (response) {
-  //       console.log("Payment successful. Response:", response);
-  //       await verifyPayment(response.razorpay_payment_id);
-  //       alert("Payment successful! 500 searches added to your account.");
-  //     },
-  //     prefill: {
-  //       name: "Customer Name",
-  //       email: "customer@example.com",
-  //     },
-  //     theme: {
-  //       color: "#3399cc",
-  //     },
-  //   };
-
-  //   const rzp1 = new window.Razorpay(options);
-  //   rzp1.open();
-  // };
 
   const handlePayment1 = async () => {
     // setIsLoading(true); // Disable button while processing
@@ -209,6 +151,8 @@ const Product = () => {
       handler: async function (response) {
         await verifyPayment(response.razorpay_payment_id);
         alert("Payment successful! 500 searches added to your account.");
+        window.location.assign("/product-search");
+        setShowPaymentModal(false);
         // setIsLoading(false); // Re-enable button after success
       },
       prefill: {
@@ -230,13 +174,68 @@ const Product = () => {
       await axios.get(
         `http://localhost:8082/api/payment/payment/${paymentId}`,
         {
-          params: { userId: "672f4cab5ec0d6f27393a10e" },
+          params: { userId: "6749afc4d3e0ef7428b5a09e" },
         }
       );
     } catch (error) {
       console.error("Error verifying payment:", error);
     }
   };
+
+  const fetchKeywords = async (phrase) => {
+    if (!phrase) return; // Don't fetch if the input is empty
+
+    setLoading(true);
+    setError(""); // Reset error
+    try {
+      const response = await axios.get(
+        "http://localhost:8082/api/amazon/keywords",
+        {
+          params: { phrase, lang: "en", loc: country },
+        }
+      );
+      setKeywords(response.data.keywords || {});
+    } catch (err) {
+      console.error("Error fetching keyword suggestions:", err);
+      setError("Failed to fetch keyword suggestions.");
+    }
+    setLoading(false);
+  };
+
+  console.log("keywords", keywords);
+
+  // const handleSearch = async () => {
+  //   if (!query) {
+  //     setError("Please enter a search term.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError("");
+  //   try {
+  //     const response = await axios.get(
+  //       "http://localhost:8082/api/amazon/getitems1",
+  //       {
+  //         params: { query, userId: "6749afc4d3e0ef7428b5a09e", country }, // Pass the user ID
+  //       }
+  //     );
+  //     setData(response.data.data.products || []);
+  //   } catch (err) {
+  //     console.log("err", err);
+  //     if (err.response?.status === 403) {
+  //       // setError("Search limit reached. Please pay to continue searching.");
+  //       const backendError =
+  //         err.response?.data?.error || "An unexpected error occurred.";
+  //       setShowPaymentModal(true);
+  //       setError(backendError);
+  //       setShowPaymentModal(true);
+  //     } else {
+  //       setError("Failed to fetch data. Please try again.");
+  //     }
+  //     console.error(err.message);
+  //   }
+  //   setLoading(false);
+  // };
 
   const handleSearch = async () => {
     if (!query) {
@@ -245,33 +244,186 @@ const Product = () => {
     }
 
     setLoading(true);
-    setError("");
+    setError(""); // Reset error
+
     try {
+      // Fetch keyword suggestions first
+      await fetchKeywords(query);
+
+      // Perform the product search
       const response = await axios.get(
         "http://localhost:8082/api/amazon/getitems1",
         {
-          params: { query, userId: "672f4cab5ec0d6f27393a10e", country }, // Pass the user ID
+          params: { query, userId: "6749afc4d3e0ef7428b5a09e", country }, // Pass the user ID
         }
       );
       setData(response.data.data.products || []);
     } catch (err) {
-      console.log("err", err);
+      console.error("Error during search:", err);
       if (err.response?.status === 403) {
-        // setError("Search limit reached. Please pay to continue searching.");
         const backendError =
           err.response?.data?.error || "An unexpected error occurred.";
-        setShowPaymentModal(true);
         setError(backendError);
-        setShowPaymentModal(true);
+        window.location.assign("/Plans");
       } else {
         setError("Failed to fetch data. Please try again.");
       }
-      console.error(err.message);
     }
+
     setLoading(false);
   };
 
-  console.log("data", data);
+  useEffect(() => {
+    getKeywordData();
+  }, []);
+
+  const getKeywordData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8082/api/getallkeyword"
+      );
+      if (response.status === 200) {
+        setkeydata(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching keyword data:", error);
+    }
+  };
+
+  console.log("keydata", keydata);
+
+  console.log("keydata", keydata);
+
+  // const handlecilickdata = (item) => {
+  //   setclickdata(item);
+  // };
+
+  // useEffect
+
+  console.log("clickdata", clickdata);
+
+  // useEffect(() => {
+  //   if (clickdata && keydata.length > 0) {
+  //     // Filter keydata to find matching ASINs in clickdata
+  //     const matchingData = keydata.filter(
+  //       (keyItem) => keyItem.asin === clickdata.asin
+  //     );
+
+  //     console.log("Matching Data:", matchingData);
+
+  //     // If needed, perform additional actions with matchingData
+  //   }
+  // }, [clickdata, keydata]);
+
+  useEffect(() => {
+    if (clickdata && keydata.length > 0) {
+      // Find matching ASIN in keydata
+      const matchingData = keydata.filter(
+        (keyItem) => keyItem.asin === clickdata.asin
+      );
+
+      console.log("Matching Data:", matchingData);
+
+      // Extract values
+      const salesVolume =
+        clickdata.sales_volume || matchingData[0]?.sales_volume;
+      const productPrice =
+        clickdata.product_price || matchingData[0]?.product_price;
+
+      console.log("Sales Volume:", salesVolume);
+      console.log("Product Price:", productPrice);
+      setsalesvalume(salesVolume);
+      setproductprice(productPrice);
+
+      // Perform any additional actions with the extracted values
+    }
+  }, [clickdata, keydata]);
+
+  console.log("sales===", salesvalume, productprice);
+
+  const convertSalesVolume = (volume) => {
+    if (!volume) return 0;
+
+    const match = volume.match(/^([\d.]+)([a-zA-Z]*)/);
+    if (!match) return 0;
+
+    const value = parseFloat(match[1]);
+    const unit = match[2];
+
+    const units = {
+      K: 1_000,
+      M: 1_000_000,
+      B: 1_000_000_000,
+    };
+
+    return unit in units ? value * units[unit] : value;
+  };
+
+  const convertedVolume = convertSalesVolume(salesvalume || "");
+  const productPrice = parseFloat(productprice.replace(/[^0-9.]/g, "") || 0);
+
+  console.log("convertedVolume", convertedVolume, productPrice);
+
+  const generateRandomMultiplier = (min, max) => {
+    const randomValue = Math.random() * (max - min) + min;
+    return parseFloat(randomValue.toFixed(3)); // Ensure the result has 3 decimal places
+  };
+
+  const randomNumberGenerate = (convertedVolume) => {
+    const minMultiplier = 1.101;
+    const maxMultiplier = 1.501;
+
+    const randomMultiplier = generateRandomMultiplier(
+      minMultiplier,
+      maxMultiplier
+    );
+    console.log("Random Multiplier:", randomMultiplier);
+
+    const result = randomMultiplier * convertedVolume; // Multiply random multiplier with salesestimate
+    console.log("Result:", result);
+
+    setRandomGeneratedNumber(result.toFixed(2)); // Update the state
+  };
+
+  // Call the random number generator once when the component mounts
+  useEffect(() => {
+    randomNumberGenerate(convertedVolume);
+  }, [convertedVolume]);
+
+  console.log("randomGeneratedNumber", randomGeneratedNumber);
+  const revenue = randomGeneratedNumber * productPrice;
+
+  console.log("revenue", revenue);
+
+  // Function to add ASIN data
+  const addkeyworddata = async () => {
+    try {
+      const config = {
+        url: "/addkeyword",
+        method: "post",
+        baseURL: "http://localhost:8082/api",
+        headers: { "Content-Type": "application/json" },
+        data: {
+          category: "",
+          sales_volume: randomGeneratedNumber || "",
+          product_price: clickdata.product_price || "",
+          asin: clickdata.asin || "",
+          product_title: clickdata.product_title || "",
+          product_star_rating: clickdata.product_star_rating || "",
+          product_num_ratings: clickdata.product_num_ratings || "",
+          product_url: clickdata.product_url || "",
+          product_photo: clickdata.product_photo || "",
+        },
+      };
+
+      const response = await axios(config);
+      if (response.status === 200) {
+        console.log("Successfully added ASIN data.");
+      }
+    } catch (error) {
+      console.error("Error adding ASIN data:", error);
+    }
+  };
 
   return (
     <div className="container">
@@ -315,37 +467,11 @@ const Product = () => {
                 </div>
               </Link>
             </div>
-
-            {/* <div className="col-md-2">
-              <div
-                onClick={handlePayment1}
-                className="poppins-regular"
-                style={{
-                  backgroundColor: "darkblue",
-                  color: "white",
-                  textAlign: "center",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
-              >
-                Pay Now
-              </div>
-            </div> */}
           </div>
 
           <div className="search-container">
             <div className="row">
               <div className="col-md-3">
-                {/* <select
-                  className="form-select mb-3"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                >
-                  <option value="IN">amazon.in</option>
-                  <option value="US">amazon.com</option>
-                </select> */}
                 <div className="custom-select-container">
                   <select
                     className="form-select custom-select"
@@ -387,7 +513,6 @@ const Product = () => {
                   style={{ marginBottom: "20px" }}
                 />
 
-                {/* <div className="col-md-2 mt-5" style={{ paddingTop: "7px" }}> */}
                 <button
                   className="btn btn-primary search_icon"
                   type="submit"
@@ -403,47 +528,82 @@ const Product = () => {
                 </button>
                 {/* </div> */}
               </div>
-              {/* <div className="col-md-2">
-                <button
-                  className="btn btn-primary search_icon"
-                  type="submit"
-                  onClick={search}
-                >
-                  Search
-                </button>
-              </div> */}
             </div>
 
             {error && <div className="alert alert-danger">{error}</div>}
 
-            {data.length > 0 ? (
+            {keywords && Object.keys(keywords).length > 0 && (
+              <div className="keyword-suggestions mt-1">
+                <span>
+                  {" "}
+                  <div className="poppins-semibold" style={{ color: "red" }}>
+                    Total Search Volume:{" "}
+                    {Object.values(keywords).reduce(
+                      (total, current) =>
+                        total + parseInt(current["search volume"] || 0, 10),
+                      0
+                    )}
+                  </div>
+                </span>
+                <h5 className="section-title">Top Keyword Suggestions </h5>
+                <table className="table keyword-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Keyword</th>
+                      <th>Search Volume</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(keywords)
+                      .slice(0, 10) // Take only the first 10 entries
+                      .map(([key, value], index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td className="poppins-regular">{key}</td>
+                          <td className="poppins-regular">
+                            {value["search volume"]}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* {data.length > 0 ? (
               <div>
                 {data?.map((item) => (
                   <Link
+                    onClick={() =>
+                      addkeyworddata({
+                        category: item.category?.name || "",
+                        salesvolume: item.sales_volume || "",
+                        price: item.product_price || "",
+                        asin: item.asin || "",
+                        product_title: item.product_title || "",
+                        product_star_rating: item.product_star_rating || "",
+                        product_num_ratings: item.product_num_ratings || "",
+                        product_url: item.product_url || "",
+                        product_photo: item.product_photo || "",
+                      })
+                    }
                     to="/product-details"
                     state={{ data: item, dailySales: dailySales }}
                     style={{ textDecoration: "none", color: "black" }}
                   >
                     <div className="row mt-3" key={item.asin}>
                       <div className="col-2">
-                        {/* {item.Images?.Primary?.Medium?.URL && ( */}
                         <div
                           className="d-flex"
                           style={{ justifyContent: "center" }}
                         >
                           <img
-                            // onClick={() =>
-                            //   handleProductClick(
-                            //     `https://www.amazon.in/dp/${item.ASIN}`
-                            //   )
-                            // }
-
                             src={item.product_photo}
                             alt={item.product_title}
                             style={{ width: "100px", height: "100px" }}
                           />
                         </div>
-                        {/* )} */}
                       </div>
                       <div
                         className="col-10 d-flex"
@@ -486,7 +646,6 @@ const Product = () => {
                           {data.country === "USD"
                             ? `$${item.product_price}`
                             : ` ${item.product_price}`}
-                          {/* price : ₹ {item.product_price} */}
                         </div>
                       </div>
                     </div>
@@ -495,9 +654,108 @@ const Product = () => {
                 ))}
               </div>
             ) : (
-              // <div className="poppins-medium mt-3" style={{ color: "red" }}>
-              //   No data found
-              // </div>
+              ""
+            )} */}
+
+            {data.length > 0 ? (
+              <div>
+                {data?.map((item) => {
+                  // Check if the ASIN exists in keydata
+                  const asinExists = keydata.some(
+                    (keyItem) => keyItem.asin === item.asin
+                  );
+
+                  return (
+                    <Link
+                      key={item.asin}
+                      to="/product-details"
+                      state={{ data: item, dailySales: dailySales }}
+                      style={{ textDecoration: "none", color: "black" }}
+                      onClick={() => {
+                        setclickdata(item);
+                        if (!asinExists) {
+                          // Call the API only if the ASIN does not exist in keydata
+                          addkeyworddata();
+                          //   {
+                          //   category: item.category?.name || "",
+                          //   sales_volume: item.sales_volume || "",
+                          //   product_price: item.product_price || "",
+                          //   asin: item.asin || "",
+                          //   product_title: item.product_title || "",
+                          //   product_star_rating: item.product_star_rating || "",
+                          //   product_num_ratings: item.product_num_ratings || "",
+                          //   product_url: item.product_url || "",
+                          //   product_photo: item.product_photo || "",
+                          // }
+                        } else {
+                          console.log(
+                            `ASIN ${item.asin} already exists in keydata. Skipping API call.`
+                          );
+                        }
+                      }}
+                    >
+                      <div className="row mt-3">
+                        <div className="col-2">
+                          <div
+                            className="d-flex"
+                            style={{ justifyContent: "center" }}
+                          >
+                            <img
+                              src={item.product_photo}
+                              alt={item.product_title}
+                              style={{ width: "100px", height: "100px" }}
+                            />
+                          </div>
+                        </div>
+                        <div
+                          className="col-10 d-flex"
+                          style={{
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <div
+                            className="poppins-regular"
+                            style={{
+                              color: "grey",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 1,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {item.product_title}
+                          </div>
+                          <div
+                            className="poppins-regular"
+                            style={{
+                              color: "grey",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 1,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {item.asin}
+                          </div>
+
+                          <div className="poppins-regular">
+                            Rating : {item.product_num_ratings}
+                          </div>
+
+                          <div className="poppins-medium">
+                            Price :{" "}
+                            {data.country === "USD"
+                              ? `$${item.product_price}`
+                              : ` ${item.product_price}`}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
               ""
             )}
 
@@ -852,8 +1110,8 @@ const Product = () => {
             ></i>
           </div> */}
           <div className="col-md-2">
-            <button
-              className="btn btn-primary search_icon"
+            <div
+              // className="btn btn-primary search_icon"
               type="submit"
               onClick={handleSearch}
               disabled={loading}
@@ -861,9 +1119,19 @@ const Product = () => {
               {loading ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
-                "Search"
+                <i
+                  onClick={handleSearch}
+                  className="fa-solid fa-magnifying-glass"
+                  style={{
+                    fontSize: "20px",
+                    backgroundColor: "darkblue",
+                    color: "white",
+                    padding: "12px",
+                    borderRadius: "5px",
+                  }}
+                ></i>
               )}
-            </button>
+            </div>
           </div>
         </div>
 
@@ -1232,8 +1500,7 @@ const Product = () => {
               <div className="plan-details">
                 <h3 className="plan-title">Basic</h3>
                 <p className="plan-description">
-                  25+ episodic series, 10+ movies & specials! Watch on any
-                  phone, tablet, computer, or TV.
+                  Buy this plan and get 500 searches free for a month
                 </p>
                 <h4 className="plan-price">₹1997/month</h4>
                 <Button

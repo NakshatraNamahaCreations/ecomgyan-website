@@ -17,12 +17,9 @@ const CombinedComponent = () => {
     }
 
     try {
-      const res = await axios.get(
-        `https://api.proleverageadmin.in/api/amazon/getitems`,
-        {
-          params: { asinNo },
-        }
-      );
+      const res = await axios.get(`http://localhost:8082/api/amazon/getitems`, {
+        params: { asinNo },
+      });
 
       if (res.status === 200) {
         setData(res.data.ItemsResult.Items);

@@ -22,7 +22,7 @@ function Coursesdetails() {
   const getallCoursesModule = async () => {
     try {
       const response = await axios.get(
-        `https://api.proleverageadmin.in/api/coursemodule/getmodulesbycourseid/${courseData._id}`
+        `http://localhost:8082/api/coursemodule/getmodulesbycourseid/${courseData._id}`
       );
       if (response.status === 200) {
         setgetallmodule(response.data.data);
@@ -35,7 +35,7 @@ function Coursesdetails() {
   const getallcontent = async () => {
     try {
       const response = await axios.get(
-        `https://api.proleverageadmin.in/api/mycourse/getcoursebyid/${courseData._id}`
+        `http://localhost:8082/api/mycourse/getcoursebyid/${courseData._id}`
       );
       if (response.status === 200) {
         setallcontent(response.data.data);
@@ -63,7 +63,7 @@ function Coursesdetails() {
           <div className="card mb-4 shadow-sm">
             <img
               className="card-img-top"
-              src={`https://api.proleverageadmin.in/course/${courseData.thumbnailImage}`}
+              src={`http://localhost:8082/course/${courseData.thumbnailImage}`}
               alt={courseData.courseName}
               style={{ height: "300px", objectFit: "cover" }}
             />
@@ -103,7 +103,7 @@ function Coursesdetails() {
                         className="mr-2"
                       />
                       <a
-                        href={`https://api.proleverageadmin.in/resource/${item.documentOrImage}`}
+                        href={`http://localhost:8082/resource/${item.documentOrImage}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="poppins-regular text-decoration-none mx-2"
@@ -130,7 +130,7 @@ function Coursesdetails() {
                         className="mr-2"
                       />
                       <a
-                        href={`https://api.proleverageadmin.in/resource/${item.documentOrImage}`}
+                        href={`http://localhost:8082/resource/${item.documentOrImage}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="poppins-regular text-decoration-none mx-2"

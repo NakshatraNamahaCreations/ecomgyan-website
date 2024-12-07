@@ -20,6 +20,8 @@ const Asin = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState(null);
+  const [asindata, setasindata] = useState([]);
+  const [isAsinExists, setIsAsinExists] = useState(false);
 
   const [userData, setUserdata] = useState(null);
 
@@ -42,7 +44,7 @@ const Asin = () => {
     }
   }, []);
 
-  console.log("userData===suman", userData?._id);
+  console.log("userData===suman", "674989f5dfc8aeedb0bebbff");
 
   const loadScript = (src) => {
     return new Promise((resolve) => {
@@ -131,13 +133,10 @@ const Asin = () => {
   // Payment gateway
   const createOrder = async () => {
     try {
-      const response = await axios.post(
-        "https://api.proleverageadmin.in/orders",
-        {
-          amount: 100, // Amount in paise (₹1997)
-          currency: "INR",
-        }
-      );
+      const response = await axios.post("http://localhost:8082/orders", {
+        amount: 100, // Amount in paise (₹1997)
+        currency: "INR",
+      });
       setOrderId(response.data.order_id); // Save order ID for later verification
       return response.data.order_id;
     } catch (error) {
@@ -214,7 +213,7 @@ const Asin = () => {
   //         try {
   //           // Call backend to verify the payment
   //           const verifyResponse = await axios.get(
-  //             `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
+  //             `http://localhost:8082/api/payment/payment/${response.razorpay_payment_id}`,
   //             {
   //               params: { userId: "674989f5dfc8aeedb0bebbff" }, // Pass userId as query parameter
   //             }
@@ -263,16 +262,16 @@ const Asin = () => {
         key: "rzp_live_yzuuxyiOlu7Oyj", // Replace with your Razorpay key
         amount: 100, // Amount in paise
         currency: "INR",
-        name: "Your Company Name",
+        name: "Proleveragea",
         description: "Payment for additional search count",
         order_id: orderId,
         handler: async function (response) {
           try {
             // Verify payment on the backend
             const verifyResponse = await axios.get(
-              `https://api.proleverageadmin.in/api/payment/payment/${response.razorpay_payment_id}`,
+              `http://localhost:8082/api/payment/payment/${response.razorpay_payment_id}`,
               {
-                params: { userId: userData?._id }, // Pass userId dynamically
+                params: { userId: "6749afc4d3e0ef7428b5a09e" }, // Pass userId dynamically
               }
             );
 
@@ -319,7 +318,7 @@ const Asin = () => {
   // const verifyPayment = async (paymentId) => {
   //   try {
   //     await axios.get(
-  //       `https://api.proleverageadmin.in/api/payment/payment/${paymentId}`,
+  //       `http://localhost:8082/api/payment/payment/${paymentId}`,
   //       {
   //         params: { userId: "674989f5dfc8aeedb0bebbff" },
   //       }
@@ -329,44 +328,260 @@ const Asin = () => {
   //   }
   // };
 
+  // Working Condition
+
+  // const handleSearch = async () => {
+  //   if (!asin) {
+  //     setError("Please enter a valid ASIN.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError(""); // Clear any previous errors
+
+  //   try {
+  //     const response = await axios.get(
+  //       "http://localhost:8082/api/amazon/affiliatekeyword1",
+  //       {
+  //         params: { asin, country, userId: "6749afc4d3e0ef7428b5a09e" },
+  //       }
+  //     );
+
+  //     if (response.data.data && Object.keys(response.data.data).length > 0) {
+  //       setData(response.data.data); // Set data if valid
+  //     } else {
+  //       setData([]); // Clear data if response is empty
+  //       setError("ASIN code is incorrect or no data available.");
+  //     }
+  //   } catch (err) {
+  //     // setError(
+  //     //   "Failed to fetch data. Please check the ASIN code and try again."
+  //     // );
+  //     const backendError =
+  //       err.response?.data?.error || "An unexpected error occurred.";
+  //     // setShowPaymentModal(true);
+  //     window.location.assign("/Plans");
+  //     setError(backendError);
+  //     console.error("Error fetching data:", err.message);
+  //   }
+
+  //   setLoading(false);
+  // };
+
+  // const handleSearch = async () => {
+  //   if (!asin) {
+  //     setError("Please enter a valid ASIN.");
+  //     return;
+  //   }
+
+  //   // Check if the ASIN already exists in `filterasindata`
+  //   const filteredData = asindata.filter((item) => item.asin === asin);
+
+  //   if (filteredData.length > 0) {
+  //     // Show filtered data directly
+  //     setData(filteredData[0]); // Assuming the first match is sufficient
+  //     setError(""); // Clear any previous errors
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError(""); // Clear any previous errors
+
+  //   try {
+  //     const response = await axios.get(
+  //       "http://localhost:8082/api/amazon/affiliatekeyword1",
+  //       {
+  //         params: { asin, country, userId: "6749afc4d3e0ef7428b5a09e" },
+  //       }
+  //     );
+
+  //     if (response.data.data && Object.keys(response.data.data).length > 0) {
+  //       setData(response.data.data); // Set data if valid
+  //     } else {
+  //       setData([]); // Clear data if response is empty
+  //       setError("ASIN code is incorrect or no data available.");
+  //     }
+  //   } catch (err) {
+  //     const backendError =
+  //       err.response?.data?.error || "An unexpected error occurred.";
+  //     window.location.assign("/Plans");
+  //     setError(backendError);
+  //     console.error("Error fetching data:", err.message);
+  //   }
+
+  //   setLoading(false);
+  // };
+
+  const updateUserSearchCount = async (userId) => {
+    try {
+      await axios.post("http://localhost:8082/api/user/update-searchcount", {
+        userId: "6749afc4d3e0ef7428b5a09e",
+      });
+      console.log("Search count updated successfully.");
+    } catch (error) {
+      console.error("Error updating search count:", error);
+    }
+  };
+
   const handleSearch = async () => {
     if (!asin) {
       setError("Please enter a valid ASIN.");
       return;
     }
 
-    setLoading(true);
-    setError(""); // Clear any previous errors
+    const filteredData = asindata.filter((item) => item.asin === asin);
 
-    try {
-      const response = await axios.get(
-        "https://api.proleverageadmin.in/api/amazon/affiliatekeyword1",
-        {
-          params: { asin, country, userId: userData?._id },
+    if (filteredData.length > 0) {
+      setData(filteredData[0]);
+      await updateUserSearchCount("6749afc4d3e0ef7428b5a09e");
+      setIsAsinExists(true);
+
+      setError("");
+      return;
+    } else {
+      setIsAsinExists(false);
+
+      setLoading(true);
+      setError("");
+      try {
+        const response = await axios.get(
+          "http://localhost:8082/api/amazon/affiliatekeyword1",
+          {
+            params: { asin, country, userId: "6749afc4d3e0ef7428b5a09e" },
+          }
+        );
+
+        if (response.data.data && Object.keys(response.data.data).length > 0) {
+          setData(response.data.data);
+
+          await addasindata({
+            userId: "6749afc4d3e0ef7428b5a09e",
+            category: response.data.data.category?.name || "",
+            sales_volume: response.data.data.sales_volume || "",
+            product_price: response.data.data.product_price || "",
+            asin: response.data.data.asin || "",
+            product_title: response.data.data.product_title || "",
+            product_star_rating: response.data.data.product_star_rating || "",
+            product_num_ratings: response.data.data.product_num_ratings || "",
+            product_url: response.data.data.product_url || "",
+            product_photo: response.data.data.product_photo || "",
+          });
+
+          // await updateUserSearchCount("6749afc4d3e0ef7428b5a09e");
+        } else {
+          setData([]);
+          setError("ASIN code is incorrect or no data available.");
         }
-      );
-
-      if (response.data.data && Object.keys(response.data.data).length > 0) {
-        setData(response.data.data); // Set data if valid
-      } else {
-        setData([]); // Clear data if response is empty
-        setError("ASIN code is incorrect or no data available.");
+      } catch (err) {
+        const backendError =
+          err.response?.data?.error || "An unexpected error occurred.";
+        setError(backendError);
+        console.error("Error fetching data:", err.message);
       }
-    } catch (err) {
-      // setError(
-      //   "Failed to fetch data. Please check the ASIN code and try again."
-      // );
-      const backendError =
-        err.response?.data?.error || "An unexpected error occurred.";
-      setShowPaymentModal(true);
-      setError(backendError);
-      console.error("Error fetching data:", err.message);
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
+  // const handleSearch = async () => {
+  //   if (!asin) {
+  //     setError("Please enter a valid ASIN.");
+  //     return;
+  //   }
+
+  //   // Check if the ASIN already exists in `asindata`
+  //   const filteredData = asindata.filter((item) => item.asin === asin);
+
+  //   if (filteredData.length > 0) {
+  //     // If data exists, set it directly
+  //     setData(filteredData[0]);
+  //     setError("");
+  //     return;
+  //   } else {
+  //     // Proceed with fetching data if not found in `asindata`
+  //     setLoading(true);
+  //     setError("");
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:8082/api/amazon/affiliatekeyword1",
+  //         {
+  //           params: { asin, country, userId: "6749afc4d3e0ef7428b5a09e" },
+  //         }
+  //       );
+
+  //       if (response.data.data && Object.keys(response.data.data).length > 0) {
+  //         setData(response.data.data);
+
+  //         await addasindata({
+  //           userId: "6749afc4d3e0ef7428b5a09e",
+  //           category: response.data.data.category?.name || "",
+  //           sales_volume: response.data.data.sales_volume || "",
+  //           product_price: response.data.data.product_price || "",
+  //           asin: response.data.data.asin || "",
+  //           product_title: response.data.data.product_title || "",
+  //           product_star_rating: response.data.data.product_star_rating || "",
+  //           product_num_ratings: response.data.data.product_num_ratings || "",
+  //           product_url: response.data.data.product_url || "",
+  //           product_photo: response.data.data.product_photo || "",
+  //         });
+  //       } else {
+  //         setData([]);
+  //         setError("ASIN code is incorrect or no data available.");
+  //       }
+  //     } catch (err) {
+  //       const backendError =
+  //         err.response?.data?.error || "An unexpected error occurred.";
+  //       setError(backendError);
+  //       console.error("Error fetching data:", err.message);
+  //     }
+  //   }
+
+  //   setLoading(false);
+  // };
+
   console.log("data", data);
+
+  useEffect(() => {
+    getasindata();
+  }, []);
+
+  const addasindata = async (asinData) => {
+    try {
+      const config = {
+        url: "/addasin",
+        method: "post",
+        baseURL: "http://localhost:8082/api",
+        headers: { "Content-Type": "application/json" },
+        data: asinData, // Pass the ASIN data directly here
+      };
+
+      const response = await axios(config);
+
+      if (response.status === 200) {
+        alert("Successfully added ASIN data");
+        // window.location.assign("/asin-code"); // Redirect to ASIN list page
+      }
+    } catch (error) {
+      console.error("Error adding ASIN data:", error);
+      alert("An error occurred while adding ASIN data. Please try again.");
+    }
+  };
+
+  const getasindata = async () => {
+    try {
+      const response = await axios.get("http://localhost:8082/api/getallasin");
+      if (response.status === 200) {
+        setasindata(response.data.data);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  console.log("asindata===", asindata);
+
+  // const filterasindata = asindata.filter((i) => i.asin === asin);
+
+  // console.log("filterasindata", filterasindata);
 
   return (
     <div className="container">
@@ -408,504 +623,561 @@ const Asin = () => {
                   </div>
                 </Link>
               </div>
-
-              {/* <div className="col-md-2">
-                <div
-                  // onClick={() => createRazorpayOrder(100)}
-                  onClick={handlePayment1}
-                  style={{ textDecoration: "none" }}
-                >
-                  <div
-                    className="poppins-regular"
-                    style={{
-                      // backgroundColor: "darkblue",
-                      border: "1px solid darkblue",
-                      color: "black",
-                      textAlign: "center",
-                      padding: "10px",
-                      borderRadius: "5px",
-                      fontSize: "14px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Pay Now
-                  </div>
-                </div>
-              </div> */}
             </div>
-            {/* <div
-              className="mb-4"
-              style={{ color: "black", fontSize: "20px", fontWeight: "bold" }}
-            >
-              Welcome Proleverage
-            </div> */}
 
-            <div className="col-md-6">
-              <h5
-                className="poppins-medium"
-                style={{
-                  fontSize: "15px",
-                  color: "darkblue",
-                  fontWeight: "bold",
-                }}
-              >
-                Search by ASIN
-              </h5>
-              <div className="row mt-3 mb-3">
-                <div className="col-md-12">
-                  {/* <select
-                    className="form-select"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                  >
-                    <option value="IN">amazon.in</option>
-                    <option value="US">amazon.com</option>
-                  </select> */}
-                  <div className="custom-select-container">
-                    <select
-                      className="form-select custom-select"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    >
-                      <option value="IN" className="flag-option">
-                        amazon.in
-                      </option>
-                      <option value="US" className="flag-option">
-                        amazon.com
-                      </option>
-                    </select>
-                    <div className="flag-container">
-                      {country === "IN" && (
-                        <img
-                          src="https://flagcdn.com/w40/in.png"
-                          alt="India Flag"
-                          className="flag-icon"
-                        />
-                      )}
-                      {country === "US" && (
-                        <img
-                          src="https://flagcdn.com/w40/us.png"
-                          alt="United States Flag"
-                          className="flag-icon"
-                        />
-                      )}
+            <div className="row" style={{ justifyContent: "center" }}>
+              <div className=" col-md-10" style={{ justifyContent: "center" }}>
+                <h5
+                  className="poppins-medium"
+                  style={{
+                    fontSize: "15px",
+                    color: "darkblue",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Search by ASIN
+                </h5>
+                <div className="row mt-3 mb-3">
+                  <div className="col-md-12">
+                    <div className="custom-select-container">
+                      <select
+                        className="form-select custom-select"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                      >
+                        <option value="IN" className="flag-option">
+                          amazon.in
+                        </option>
+                        <option value="US" className="flag-option">
+                          amazon.com
+                        </option>
+                      </select>
+                      <div className="flag-container">
+                        {country === "IN" && (
+                          <img
+                            src="https://flagcdn.com/w40/in.png"
+                            alt="India Flag"
+                            className="flag-icon"
+                          />
+                        )}
+                        {country === "US" && (
+                          <img
+                            src="https://flagcdn.com/w40/us.png"
+                            alt="United States Flag"
+                            className="flag-icon"
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="row mt-3 mb-3">
-                <div className="col-md-10">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="B0D3R1JQ7D"
-                    value={asin}
-                    onChange={(e) => setAsin(e.target.value)}
-                  />
+                <div className="row mt-3 mb-3">
+                  <div className="col-md-10">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="B0D3R1JQ7D"
+                      value={asin}
+                      onChange={(e) => setAsin(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-2">
+                    <button
+                      className="btn btn-primary search_icon"
+                      type="submit"
+                      // onClick={search}
+                      onClick={handleSearch}
+                      disabled={loading} // Disable button while loading
+                    >
+                      {loading ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        "Search"
+                      )}
+                    </button>
+                    {/* <button
+                      className={`btn btn-primary ${
+                        isAsinExists ? "update-button" : "search-button"
+                      }`}
+                      type="submit"
+                      onClick={handleSearch}
+                      disabled={loading} // Disable button while loading
+                    >
+                      {loading ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : isAsinExists ? (
+                        "Update ASIN"
+                      ) : (
+                        "Search"
+                      )}
+                    </button> */}
+                  </div>
                 </div>
-                <div className="col-md-2">
-                  <button
-                    className="btn btn-primary search_icon"
-                    type="submit"
-                    // onClick={search}
-                    onClick={handleSearch}
-                    disabled={loading} // Disable button while loading
-                  >
-                    {loading ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      "Search"
-                    )}
-                  </button>
-                </div>
-              </div>
-              {error && (
-                <div className="alert alert-danger mt-3 poppin-regular">
-                  {error}
-                </div>
-              )}
+                {error && (
+                  <div className="alert alert-danger mt-3 poppin-regular">
+                    {error}
+                  </div>
+                )}
 
-              {!data && !Object.keys(data).length && !error && (
-                <div className="alert alert-warning mt-3">
-                  No data available for the entered ASIN code.
-                </div>
-              )}
+                {!data && !Object.keys(data).length && !error && (
+                  <div className="alert alert-warning mt-3">
+                    No data available for the entered ASIN code.
+                  </div>
+                )}
 
-              {data && Object.keys(data).length > 0 && (
-                <div>
-                  <Link
-                    to="/asin-details"
-                    state={{ data, dailySales: dailySales }}
-                    style={{ textDecoration: "none", color: "black" }}
+                {/* Working Condition */}
+
+                {/* {data && Object.keys(data).length > 0 && (
+                  <div
+                    onClick={() =>
+                      addasindata({
+                        category: data.category?.name || "",
+                        salesvolume: data.sales_volume || "",
+                        price: data.product_price || "",
+                        asin: data.asin || "",
+                        product_title: data.product_title || "",
+                        product_star_rating: data.product_star_rating || "",
+                        product_num_ratings: data.product_num_ratings || "",
+                        product_url: data.product_url || "",
+                        product_photo: data.product_photo || "",
+                      })
+                    }
                   >
-                    <div className="row mt-3" key={data.asin}>
-                      <div className="col-2">
-                        <img
-                          src={data.product_photo}
-                          alt={data.product_title}
-                          style={{ width: "100%", height: "100px" }}
-                        />
-                      </div>
-                      <div
-                        className="col-10 d-flex"
-                        style={{
-                          flexDirection: "column",
-                          justifyContent: "center",
-                        }}
-                      >
+                    <Link
+                      to="/asin-details"
+                      state={{ data, dailySales: dailySales }}
+                      style={{ textDecoration: "none", color: "black" }}
+                    >
+                      <div className="row mt-3" key={data.asin}>
+                        <div className="col-2">
+                          <img
+                            src={data.product_photo}
+                            alt={data.product_title}
+                            style={{ width: "100%", height: "100px" }}
+                          />
+                        </div>
                         <div
-                          className="poppins-regular"
+                          className="col-10 d-flex"
                           style={{
-                            color: "grey",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
+                            flexDirection: "column",
+                            justifyContent: "center",
                           }}
                         >
-                          {data.product_title}
-                        </div>
-                        <div className="poppins-medium">
-                          {data.country === "US"
-                            ? `$${data.product_price}`
-                            : `Rs. ${data.product_price}`}
+                          <div
+                            className="poppins-regular"
+                            style={{
+                              color: "grey",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {data.product_title}
+                          </div>
+                          <div className="poppins-medium">
+                            {data.country === "US"
+                              ? `$${data.product_price}`
+                              : `Rs. ${data.product_price}`}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </div>
-              )}
+                    </Link>
+                  </div>
+                )} */}
 
-              {dailySales > 0 && (
+                {data && Object.keys(data).length > 0 && (
+                  <div
+                  // onClick={() =>
+                  //   addasindata({
+                  //     category: data.category?.name || "",
+                  //     sales_volume: data.sales_volume || "",
+                  //     product_price: data.product_price || "",
+                  //     asin: data.asin || "",
+                  //     product_title: data.product_title || "",
+                  //     product_star_rating: data.product_star_rating || "",
+                  //     product_num_ratings: data.product_num_ratings || "",
+                  //     product_url: data.product_url || "",
+                  //     product_photo: data.product_photo || "",
+                  //   })
+                  // }
+                  >
+                    <Link
+                      to="/asin-details"
+                      state={{ data, dailySales: dailySales }}
+                      style={{ textDecoration: "none", color: "black" }}
+                    >
+                      <div className="row mt-3" key={data.asin}>
+                        <div className="col-2">
+                          <img
+                            src={data.product_photo}
+                            alt={data.product_title}
+                            style={{ width: "100%", height: "100px" }}
+                          />
+                        </div>
+                        <div
+                          className="col-10 d-flex"
+                          style={{
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <div
+                            className="poppins-regular"
+                            style={{
+                              color: "grey",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {data.product_title}
+                          </div>
+                          <div className="poppins-medium">
+                            {data.country === "US"
+                              ? `$${data.product_price}`
+                              : `Rs. ${data.product_price}`}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+
+                {/* {dailySales > 0 && (
                 <div style={{ marginTop: "20px" }}>
                   <h2 className="poppins-medium" style={{ color: "blue" }}>
                     FBA fee: {dailySales.toFixed(2)}
                   </h2>
                 </div>
-              )}
-              {data.length === 0 && (
-                <div className="row mt-2">
-                  <div className="poppins-black pb-2">Search Products</div>
-                  <div className="col-4">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/yogamat.jpg"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+              )} */}
+                {data.length === 0 && (
+                  <div className="row mt-2">
+                    <div className="poppins-black pb-2">Search Products</div>
+                    <div className="col-2">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/yogamat.jpg"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+
+                      <div className="poppins-regular pt-1 text-center">
+                        Yoga Mat
+                      </div>
+                    </div>
+                    <div className="col-2">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/ear.jpg"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Ear buds
+                      </div>
+                    </div>
+                    <div className="col-2">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/mobile.jpg"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Mobiles
+                      </div>
                     </div>
 
-                    <div className="poppins-regular pt-1 text-center">
-                      Yoga Mat
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/dress.jpg"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Tables
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-4">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/ear.jpg"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
-                    </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Ear buds
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/mobile.jpg"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
-                    </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Mobiles
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/dress.jpg"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/jewellery.png"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Jewellery
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Tables
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/jewellery.png"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/pen.png"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Pen
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Jewellery
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/pen.png"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/shoes.png"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Shoes
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">Pen</div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/shoes.png"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/toy.jfif"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Toys & Games
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Shoes
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/toy.jfif"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/car.jpg"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Car & Motorbike
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Toys & Games
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/car.jpg"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/electronic.png"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Electronics
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Car & Motorbike
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/electronic.png"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/bp.jfif"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Health & Personal Care
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Electronics
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/bp.jfif"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/science.jfif"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Industrial & Scientific
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Health & Personal Care
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/science.jfif"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/music.png"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Musical Instruments
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Industrial & Scientific
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/music.png"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/pet.png"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Pet Supplies
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Musical Instruments
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/pet.png"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/sports.png"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Sports, Fitness & Outdoor
+                      </div>
                     </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Pet Supplies
-                    </div>
-                  </div>
 
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/sports.png"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
-                    </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Sports, Fitness & Outdoor
-                    </div>
-                  </div>
-
-                  <div className="col-4 mt-3">
-                    <div
-                      className="d-flex"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <img
-                        src="./images/watch.jpg"
-                        alt="loading....."
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "10px",
-                        }}
-                      />
-                    </div>
-                    <div className="poppins-regular pt-1 text-center">
-                      Watch
+                    <div className="col-2 mt-3">
+                      <div
+                        className="d-flex"
+                        style={{ justifyContent: "center" }}
+                      >
+                        <img
+                          src="./images/watch.jpg"
+                          alt="loading....."
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      </div>
+                      <div className="poppins-regular pt-1 text-center">
+                        Watch
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-            <div className="col-md-6">
+            {/* <div className="col-md-6">
               <h1 className="poppins-medium" style={{ color: "darkblue" }}>
                 FBA Fee Calculator
               </h1>
@@ -974,7 +1246,7 @@ const Asin = () => {
                   </p>
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

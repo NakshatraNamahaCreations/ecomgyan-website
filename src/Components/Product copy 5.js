@@ -41,7 +41,7 @@ const Product = () => {
     }
   }, []);
 
-  console.log("userData===suman", userData?._id);
+  console.log("userData===suman", "674989f5dfc8aeedb0bebbff");
 
   const loadScript = (src) => {
     return new Promise((resolve) => {
@@ -135,7 +135,7 @@ const Product = () => {
         {
           amount: 1.0, // Amount in paise (₹1.00)
           currency: "INR",
-          userId: "672f4cab5ec0d6f27393a10e", // Pass user ID from localStorage
+          userId: "674989f5dfc8aeedb0bebbff", // Pass user ID from localStorage
         }
       );
       return response.data.orderId;
@@ -209,6 +209,8 @@ const Product = () => {
       handler: async function (response) {
         await verifyPayment(response.razorpay_payment_id);
         alert("Payment successful! 500 searches added to your account.");
+        window.location.assign("/product-search");
+        setShowPaymentModal(false);
         // setIsLoading(false); // Re-enable button after success
       },
       prefill: {
@@ -230,7 +232,7 @@ const Product = () => {
       await axios.get(
         `http://localhost:8082/api/payment/payment/${paymentId}`,
         {
-          params: { userId: "672f4cab5ec0d6f27393a10e" },
+          params: { userId: "674989f5dfc8aeedb0bebbff" },
         }
       );
     } catch (error) {
@@ -250,7 +252,7 @@ const Product = () => {
       const response = await axios.get(
         "http://localhost:8082/api/amazon/getitems1",
         {
-          params: { query, userId: "672f4cab5ec0d6f27393a10e", country }, // Pass the user ID
+          params: { query, userId: "674989f5dfc8aeedb0bebbff", country }, // Pass the user ID
         }
       );
       setData(response.data.data.products || []);
@@ -852,8 +854,8 @@ const Product = () => {
             ></i>
           </div> */}
           <div className="col-md-2">
-            <button
-              className="btn btn-primary search_icon"
+            <div
+              // className="btn btn-primary search_icon"
               type="submit"
               onClick={handleSearch}
               disabled={loading}
@@ -861,9 +863,19 @@ const Product = () => {
               {loading ? (
                 <CircularProgress size={20} color="inherit" />
               ) : (
-                "Search"
+                <i
+                  onClick={handleSearch}
+                  className="fa-solid fa-magnifying-glass"
+                  style={{
+                    fontSize: "20px",
+                    backgroundColor: "darkblue",
+                    color: "white",
+                    padding: "12px",
+                    borderRadius: "5px",
+                  }}
+                ></i>
               )}
-            </button>
+            </div>
           </div>
         </div>
 
@@ -1232,8 +1244,7 @@ const Product = () => {
               <div className="plan-details">
                 <h3 className="plan-title">Basic</h3>
                 <p className="plan-description">
-                  25+ episodic series, 10+ movies & specials! Watch on any
-                  phone, tablet, computer, or TV.
+                  Buy this plan and get 500 searches free for a month
                 </p>
                 <h4 className="plan-price">₹1997/month</h4>
                 <Button

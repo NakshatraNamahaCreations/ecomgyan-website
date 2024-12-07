@@ -15,12 +15,9 @@ const CombinedComponent = () => {
     }
 
     try {
-      const res = await axios.get(
-        `https://api.proleverageadmin.in/api/amazon/keyword`,
-        {
-          params: { keywords },
-        }
-      );
+      const res = await axios.get(`http://localhost:8082/api/amazon/keyword`, {
+        params: { keywords },
+      });
 
       if (res.status === 200) {
         const keywordSuggestions = res.data.keywordSuggestions.keywords;

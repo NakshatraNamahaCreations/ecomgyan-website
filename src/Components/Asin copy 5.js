@@ -68,7 +68,7 @@ const CombinedComponent = () => {
     let config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: "https://api.proleverageadmin.in/orders",
+      url: "http://localhost:8082/orders",
       headers: {
         "Content-Type": "application/json",
       },
@@ -123,7 +123,7 @@ const CombinedComponent = () => {
     const paymentId = e.target.paymentId.value;
 
     axios
-      .get(`https://api.proleverageadmin.in/payment/${paymentId}`)
+      .get(`http://localhost:8082/payment/${paymentId}`)
       .then((response) => {
         console.log(response.data);
         setResponseState(response.data);
@@ -140,7 +140,7 @@ const CombinedComponent = () => {
   //   }
 
   //   try {
-  //     const res = await axios.get(`https://api.proleverageadmin.in/api/amazon/getitems`, {
+  //     const res = await axios.get(`http://localhost:8082/api/amazon/getitems`, {
   //       params: { asinNo },
   //     });
 
@@ -168,7 +168,7 @@ const CombinedComponent = () => {
   //   }
 
   //   try {
-  //     const res = await axios.get(`https://api.proleverageadmin.in/api/amazon/getitems`, {
+  //     const res = await axios.get(`http://localhost:8082/api/amazon/getitems`, {
   //       params: {
   //         asinNo,
   //         userId: "672f4cab5ec0d6f27393a10e",
@@ -194,7 +194,7 @@ const CombinedComponent = () => {
   //   }
 
   //   try {
-  //     const res = await axios.get(`https://api.proleverageadmin.in/api/amazon/getitems`, {
+  //     const res = await axios.get(`http://localhost:8082/api/amazon/getitems`, {
   //       params: { asinNo, userId: "672f4cab5ec0d6f27393a10e" },
   //     });
 
@@ -219,16 +219,13 @@ const CombinedComponent = () => {
     setLoading(true);
 
     try {
-      const res = await axios.get(
-        `https://api.proleverageadmin.in/api/amazon/getitems`,
-        {
-          params: {
-            asinNo,
-            // userId: userData?._id,
-            userId: "672f4cab5ec0d6f27393a10e",
-          },
-        }
-      );
+      const res = await axios.get(`http://localhost:8082/api/amazon/getitems`, {
+        params: {
+          asinNo,
+          // userId: userData?._id,
+          userId: "672f4cab5ec0d6f27393a10e",
+        },
+      });
 
       if (res.data.showPaymentModal) {
         alert("Free search limit reached. Please make a payment.");
@@ -321,13 +318,10 @@ const CombinedComponent = () => {
   // Payment gateway
   const createOrder = async () => {
     try {
-      const response = await axios.post(
-        "https://api.proleverageadmin.in/orders",
-        {
-          amount: 100, // Amount in paise (₹1997)
-          currency: "INR",
-        }
-      );
+      const response = await axios.post("http://localhost:8082/orders", {
+        amount: 100, // Amount in paise (₹1997)
+        currency: "INR",
+      });
       setOrderId(response.data.order_id); // Save order ID for later verification
       return response.data.order_id;
     } catch (error) {
@@ -379,7 +373,7 @@ const CombinedComponent = () => {
   // Verify payment and update user search limit
   const verifyPayment = async (paymentId) => {
     try {
-      await axios.get(`https://api.proleverageadmin.in/payment/${paymentId}`, {
+      await axios.get(`http://localhost:8082/payment/${paymentId}`, {
         params: { userId: userData?._id },
       });
     } catch (error) {

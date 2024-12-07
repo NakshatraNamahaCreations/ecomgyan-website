@@ -19,7 +19,7 @@ function Signup() {
   //     const config = {
   //       url: "/users/auth/firebaseregister",
   //       method: "post",
-  //       baseURL: "https://api.proleverageadmin.in/api",
+  //       baseURL: "http://localhost:8082/api",
   //       headers: { "Content-Type": "application/json" },
   //       data: {
   //         name,
@@ -64,7 +64,7 @@ function Signup() {
       const config = {
         url: "/users/auth/firebaseregister",
         method: "post",
-        baseURL: "https://api.proleverageadmin.in/api",
+        baseURL: "http://localhost:8082/api",
         headers: { "Content-Type": "application/json" },
         data: {
           name,

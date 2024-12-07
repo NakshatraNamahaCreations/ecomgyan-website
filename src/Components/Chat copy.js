@@ -15,7 +15,7 @@ function Chat() {
 
   const API = (token) =>
     axios.create({
-      baseURL: "https://api.proleverageadmin.in/",
+      baseURL: "http://localhost:8082/",
       headers: { Authorization: token },
     });
 

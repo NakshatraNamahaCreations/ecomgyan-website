@@ -10,7 +10,7 @@ function Chatlogin() {
       const config = {
         url: "/users/auth/login",
         method: "post",
-        baseURL: "https://api.proleverageadmin.in/api",
+        baseURL: "http://localhost:8082/api",
         headers: { "content-type": "application/json" },
         data: { email, password },
       };

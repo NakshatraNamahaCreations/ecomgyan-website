@@ -17,6 +17,7 @@ import Product from "./Components/Product";
 import Asindetails from "./Components/Asindetails";
 import Productdetails from "./Components/Productdetails";
 import Header1 from "./Components/Header1";
+import Plan from "./Components/Plan";
 
 function App() {
   return (
@@ -155,6 +156,18 @@ function App() {
               <Header />
               <Header1 />
               <Productdetails />
+              <Footer />
+            </>
+          }
+        />
+
+        <Route
+          path="/Plans"
+          element={
+            <>
+              <Header />
+              <Header1 />
+              <Plan />
               <Footer />
             </>
           }

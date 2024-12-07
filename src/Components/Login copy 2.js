@@ -61,7 +61,7 @@ const Login = () => {
       const { phoneNumber } = result.user;
       // Call your backend to authenticate
       const response = await axios.post(
-        "https://api.proleverageadmin.in/api/users/auth/firebaselogin",
+        "http://localhost:8082/api/users/auth/firebaselogin",
         { phoneNumber }
       );
       localStorage.setItem("token", response.data.token);

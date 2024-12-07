@@ -39,7 +39,7 @@ const CombinedComponent = () => {
     let config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: "https://api.proleverageadmin.in/orders",
+      url: "http://localhost:8082/orders",
       headers: {
         "Content-Type": "application/json",
       },
@@ -94,7 +94,7 @@ const CombinedComponent = () => {
     const paymentId = e.target.paymentId.value;
 
     axios
-      .get(`https://api.proleverageadmin.in/payment/${paymentId}`)
+      .get(`http://localhost:8082/payment/${paymentId}`)
       .then((response) => {
         console.log(response.data);
         setResponseState(response.data);
@@ -111,12 +111,9 @@ const CombinedComponent = () => {
     }
 
     try {
-      const res = await axios.get(
-        `https://api.proleverageadmin.in/api/amazon/getitems`,
-        {
-          params: { asinNo },
-        }
-      );
+      const res = await axios.get(`http://localhost:8082/api/amazon/getitems`, {
+        params: { asinNo },
+      });
 
       if (res.status === 200) {
         setData(res.data.ItemsResult.Items);

@@ -42,7 +42,7 @@ function Content() {
   const getallDocumentModule = async () => {
     try {
       const response = await axios.get(
-        `https://api.proleverageadmin.in/api/document-module/getdocumentbymoduleid/${id}`
+        `http://localhost:8082/api/document-module/getdocumentbymoduleid/${id}`
       );
       if (response.status === 200) {
         setalldocumentmodule(response.data?.data);
@@ -59,7 +59,7 @@ function Content() {
   const getallVideoModule = async () => {
     try {
       const response = await axios.get(
-        `https://api.proleverageadmin.in/api/video-module/getvideobymoduleid/${id}`
+        `http://localhost:8082/api/video-module/getvideobymoduleid/${id}`
       );
       if (response.status === 200) {
         setallvideomodule(response.data?.data);
@@ -76,7 +76,7 @@ function Content() {
   const getallImageModule = async () => {
     try {
       const response = await axios.get(
-        `https://api.proleverageadmin.in/api/image-module/getimagebymoduleid/${id}`
+        `http://localhost:8082/api/image-module/getimagebymoduleid/${id}`
       );
       if (response.status === 200) {
         setallimagesmodule(response.data?.data);
@@ -137,7 +137,7 @@ function Content() {
               >
                 <div className="pb-1">{data.moduleName}</div>
                 <a
-                  href={`https://api.proleverageadmin.in/document-module/${data.document}`}
+                  href={`http://localhost:8082/document-module/${data.document}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -206,7 +206,7 @@ function Content() {
             <div className="row border p-2" style={{ marginRight: "5px" }}>
               <div className="col-md-2">
                 <img
-                  src={`https://api.proleverageadmin.in/image/${data.image}`}
+                  src={`http://localhost:8082/image/${data.image}`}
                   alt="loading..."
                   width="80"
                   height="60"

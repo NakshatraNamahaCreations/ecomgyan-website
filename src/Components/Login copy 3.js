@@ -22,7 +22,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://api.proleverageadmin.in/api/auth/check-user",
+        "http://localhost:8082/api/auth/check-user",
         {
           phoneNumber: ph,
         }
@@ -49,7 +49,7 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://api.proleverageadmin.in/api/auth/verify-otp",
+        "http://localhost:8082/api/auth/verify-otp",
         {
           phoneNumber: ph,
           otp,

@@ -14,11 +14,15 @@ function Productdetails() {
   const [sales, setSales] = useState(0);
   const [costPerUnit, setCostPerUnit] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [keydata, setkeydata] = useState([]);
+  const [asindata, setasindata] = useState([]);
+  const [matchingAsins, setMatchingAsins] = useState([]);
+  const [randomGeneratedNumber, setRandomGeneratedNumber] = useState(0);
 
   // Equivalent to initState
   useEffect(() => {
     calculateReferralFee();
-    calculateClosingFee();
+    // calculateClosingFee();
     calculateCostPerUnit();
     // }, 1200);
   }, [costPerUnit]);
@@ -53,21 +57,7 @@ function Productdetails() {
     }
   };
 
-  const calculateClosingFee = () => {
-    let price = parseFloat(data.product_price || 0);
-    let finalPrice;
-
-    if (price <= 250) {
-      finalPrice = 4 * 1.18;
-      setClosingFee(finalPrice);
-    } else if (price >= 251 && price <= 500) {
-      setClosingFee(9);
-    } else if (price >= 501 && price <= 1000) {
-      setClosingFee(30);
-    } else {
-      setClosingFee(61);
-    }
-  };
+  // let closingFee = 0;
 
   const calculateCostPerUnit = () => {
     const cost = (referralFee + closingFee + 80) * 1.18;
@@ -138,15 +128,59 @@ function Productdetails() {
   const productPrice = parseFloat(
     data.product_price.replace(/[^0-9.]/g, "") || 0
   );
-  const salesestimate = convertedVolume * productPrice;
+
+  useEffect(() => {
+    if (productPrice >= 0 && productPrice <= 250) {
+      setClosingFee(25);
+    } else if (productPrice >= 251 && productPrice <= 500) {
+      setClosingFee(20);
+    } else if (productPrice >= 501 && productPrice <= 1000) {
+      setClosingFee(25);
+    } else if (productPrice > 1000) {
+      setClosingFee(50);
+    } else {
+      setClosingFee(0); // Fallback for invalid product price
+    }
+  }, [productPrice]);
+
+  console.log("Closing Fee", closingFee);
+
+  const salesestimate = convertedVolume;
 
   const Revenueestimate = convertedVolume * productPrice;
 
   console.log("Revenueestimate", Revenueestimate);
 
   console.log("Converted Sales Volume:", convertedVolume);
-  console.log("Product Price:", productPrice);
-  console.log("Sales Estimate:", salesestimate);
+
+  const generateRandomMultiplier = (min, max) => {
+    const randomValue = Math.random() * (max - min) + min;
+    return parseFloat(randomValue.toFixed(3)); // Ensure the result has 3 decimal places
+  };
+
+  const randomNumberGenerate = (salesestimate) => {
+    const minMultiplier = 1.101;
+    const maxMultiplier = 1.501;
+
+    const randomMultiplier = generateRandomMultiplier(
+      minMultiplier,
+      maxMultiplier
+    );
+    console.log("Random Multiplier:", randomMultiplier);
+
+    const result = randomMultiplier * salesestimate; // Multiply random multiplier with salesestimate
+    console.log("Result:", result);
+
+    setRandomGeneratedNumber(result.toFixed(2)); // Update the state
+  };
+
+  // Call the random number generator once when the component mounts
+  useEffect(() => {
+    randomNumberGenerate(salesestimate);
+  }, [salesestimate]);
+
+  console.log("randomGeneratedNumber", randomGeneratedNumber);
+  const revenue = randomGeneratedNumber * productPrice;
 
   // const totalFees = () => {
   //   const fbaFee = data.currency === "USD" ? 2 : 80; // FBA Fee based on currency
@@ -178,6 +212,71 @@ function Productdetails() {
   // console.log("totalFees", totalFees());
 
   console.log("totalFees", totalFees());
+
+  useEffect(() => {
+    getKeywordData();
+    getAsinData();
+  }, []);
+
+  const getKeywordData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8082/api/getallkeyword"
+      );
+      if (response.status === 200) {
+        setkeydata(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching keyword data:", error);
+    }
+  };
+
+  const getAsinData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8082/api/getallasin");
+      if (response.status === 200) {
+        setasindata(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching ASIN data:", error);
+    }
+  };
+
+  // // Filter Matching and Non-Matching ASINs
+  // const filterAsins = () => {
+  //   if (asindata.length === 0 || keydata.length === 0) return;
+
+  //   // Matching ASINs
+  //   const matchingAsins = asindata.filter((asinItem) =>
+  //     keydata.some((keyItem) => keyItem.asin === asinItem.asin)
+  //   );
+
+  //   // Non-Matching ASINs
+  //   const nonMatchingAsins = asindata.filter(
+  //     (asinItem) => !keydata.some((keyItem) => keyItem.asin === asinItem.asin)
+  //   );
+
+  //   console.log("Matching ASINs:", matchingAsins);
+  //   console.log("Non-Matching ASINs:", nonMatchingAsins);
+  // };
+
+  // // Run the filter logic whenever asindata or keydata changes
+  // useEffect(() => {
+  //   filterAsins();
+  // }, [asindata, keydata]);
+
+  useEffect(() => {
+    if (asindata.length > 0 && keydata.length > 0) {
+      const matching = asindata.filter((asinItem) =>
+        keydata.some((keyItem) => keyItem.asin === asinItem.asin)
+      );
+      setMatchingAsins(matching); // Store matching ASINs in state
+    }
+  }, [asindata, keydata]);
+
+  console.log("matchingAsins", matchingAsins);
+
+  console.log("product_price", data.product_price);
 
   return (
     <div className="container">
@@ -346,7 +445,8 @@ function Productdetails() {
                     fontWeight: "bold",
                   }}
                 >
-                  {convertedVolume}
+                  {/* {convertedVolume} */}
+                  {randomGeneratedNumber}
                   <span>
                     <i
                       className="fa-solid fa-arrow-up mx-2"
@@ -376,9 +476,7 @@ function Productdetails() {
               className="poppins-regular"
               style={{ fontWeight: "bold", fontSize: "13px" }}
             >
-              {data.currency === "USD"
-                ? `$${Revenueestimate}`
-                : ` ₹ ${Revenueestimate}`}
+              {data.currency === "USD" ? `$${revenue}` : ` ₹ ${revenue}`}
               {/* {Revenueestimate} */}
             </div>
           </div>

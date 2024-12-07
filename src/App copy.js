@@ -62,7 +62,7 @@ const App = () => {
 
       // Call your backend to authenticate
       const response = await axios.post(
-        "https://api.proleverageadmin.in/api/users/auth/firebaseregister",
+        "http://localhost:8082/api/users/auth/firebaseregister",
         { phoneNumber }
       );
 
